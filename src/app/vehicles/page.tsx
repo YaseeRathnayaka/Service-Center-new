@@ -1,21 +1,32 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import Table from '../../components/atoms/Table';
-import Button from '../../components/atoms/Button';
-import Drawer from '../../components/molecules/Drawer';
-import Dialog from '../../components/molecules/Dialog';
-import LottieLoader from '../../components/atoms/LottieLoader';
-import AtomicForm, { AtomicField } from '../../components/atoms/AtomicForm';
-import { toast } from 'react-toastify';
-import { getVehicles, addVehicle, updateVehicle, deleteVehicle, Vehicle } from '../../lib/api/vehicles';
+import React, { useState, useEffect } from "react";
+import Table from "../../components/atoms/Table";
+import Button from "../../components/atoms/Button";
+import Drawer from "../../components/molecules/Drawer";
+import Dialog from "../../components/molecules/Dialog";
+import LottieLoader from "../../components/atoms/LottieLoader";
+import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
+import { toast } from "react-toastify";
+import {
+  getVehicles,
+  addVehicle,
+  updateVehicle,
+  deleteVehicle,
+  Vehicle,
+} from "../../lib/api/vehicles";
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ make: '', model: '', year: '', plate: '' });
-  const [formError, setFormError] = useState('');
+  const [form, setForm] = useState({
+    make: "",
+    model: "",
+    year: "",
+    plate: "",
+  });
+  const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -26,41 +37,49 @@ export default function VehiclesPage() {
     setVehicles(await getVehicles());
     setLoading(false);
   };
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const openDrawer = (vehicle?: Vehicle) => {
     if (vehicle) {
       setEditId(vehicle.id!);
-      setForm({ make: vehicle.make, model: vehicle.model, year: vehicle.year, plate: vehicle.plate });
+      setForm({
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        plate: vehicle.plate,
+      });
     } else {
       setEditId(null);
-      setForm({ make: '', model: '', year: '', plate: '' });
+      setForm({ make: "", model: "", year: "", plate: "" });
     }
-    setFormError('');
+    setFormError("");
     setDrawerOpen(true);
   };
 
-  const handleField = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [name]: e.target.value }));
-  };
+  const handleField =
+    (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((f) => ({ ...f, [name]: e.target.value }));
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormLoading(true);
-    setFormError('');
+    setFormError("");
     try {
       if (editId) {
         await updateVehicle(editId, form);
-        toast.success('Vehicle updated successfully');
+        toast.success("Vehicle updated successfully");
       } else {
         await addVehicle(form);
-        toast.success('Vehicle added successfully');
+        toast.success("Vehicle added successfully");
       }
       setDrawerOpen(false);
       fetchData();
     } catch (err: any) {
-      setFormError(err.message || 'Error saving vehicle');
-      toast.error(err.message || 'Error saving vehicle');
+      setFormError(err.message || "Error saving vehicle");
+      toast.error(err.message || "Error saving vehicle");
     } finally {
       setFormLoading(false);
     }
@@ -75,9 +94,9 @@ export default function VehiclesPage() {
     setDeleteLoading(true);
     try {
       await deleteVehicle(deleteId);
-      toast.success('Vehicle deleted');
+      toast.success("Vehicle deleted");
     } catch (err: any) {
-      toast.error(err.message || 'Error deleting vehicle');
+      toast.error(err.message || "Error deleting vehicle");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -86,36 +105,78 @@ export default function VehiclesPage() {
   };
 
   const columns = [
-    { label: 'Make', accessor: 'make' },
-    { label: 'Model', accessor: 'model' },
-    { label: 'Year', accessor: 'year' },
-    { label: 'Plate', accessor: 'plate' },
+    { label: "Make", accessor: "make" },
+    { label: "Model", accessor: "model" },
+    { label: "Year", accessor: "year" },
+    { label: "Plate", accessor: "plate" },
     {
-      label: 'Actions', accessor: 'actions', render: (_: any, row: Vehicle) => (
+      label: "Actions",
+      accessor: "actions",
+      render: (_: any, row: Vehicle) => (
         <div className="flex gap-2">
-          <Button iconOnly variant="secondary" aria-label="Edit vehicle" onClick={() => openDrawer(row)}>
+          <Button
+            iconOnly
+            variant="secondary"
+            aria-label="Edit vehicle"
+            onClick={() => openDrawer(row)}
+          >
             <i className="ri-edit-2-line text-lg" />
           </Button>
-          <Button iconOnly variant="danger" aria-label="Delete vehicle" onClick={() => handleDelete(row.id!)}>
+          <Button
+            iconOnly
+            variant="danger"
+            aria-label="Delete vehicle"
+            onClick={() => handleDelete(row.id!)}
+          >
             <i className="ri-delete-bin-6-line text-lg" />
           </Button>
         </div>
-      )
+      ),
     },
   ];
 
   const fields: AtomicField[] = [
-    { name: 'make', label: 'Make', type: 'text', value: form.make, onChange: handleField('make'), required: true },
-    { name: 'model', label: 'Model', type: 'text', value: form.model, onChange: handleField('model'), required: true },
-    { name: 'year', label: 'Year', type: 'text', value: form.year, onChange: handleField('year'), required: true },
-    { name: 'plate', label: 'Plate', type: 'text', value: form.plate, onChange: handleField('plate'), required: true },
+    {
+      name: "make",
+      label: "Make",
+      type: "text",
+      value: form.make,
+      onChange: handleField("make"),
+      required: true,
+    },
+    {
+      name: "model",
+      label: "Model",
+      type: "text",
+      value: form.model,
+      onChange: handleField("model"),
+      required: true,
+    },
+    {
+      name: "year",
+      label: "Year",
+      type: "text",
+      value: form.year,
+      onChange: handleField("year"),
+      required: true,
+    },
+    {
+      name: "plate",
+      label: "Plate",
+      type: "text",
+      value: form.plate,
+      onChange: handleField("plate"),
+      required: true,
+    },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-blue-900">Vehicle Management</h1>
-        <Button onClick={() => openDrawer()} variant="primary">+ Add Vehicle</Button>
+        <Button onClick={() => openDrawer()} variant="primary">
+          + Add Vehicle
+        </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
         <h2 className="font-semibold mb-2 text-blue-900">All Vehicles</h2>
@@ -126,18 +187,41 @@ export default function VehiclesPage() {
           </div>
         )}
       </div>
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={editId ? 'Edit Vehicle' : 'Add Vehicle'}>
+      <Drawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title={
+          editId ? (editId ? "Edit Vehicle" : "Add Vehicle") : "Add Vehicle"
+        }
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="primary"
+              form="vehicle-form"
+              type="submit"
+              loading={formLoading}
+            >
+              {editId ? "Update" : "Add"}
+            </Button>
+          </div>
+        }
+      >
         <AtomicForm
+          id="vehicle-form"
           fields={fields}
           onSubmit={handleSubmit}
-          submitLabel={editId ? 'Update' : 'Add'}
           loading={formLoading}
           error={formError}
+          submitLabel={editId ? "Update" : "Add"}
+          // Remove submit button from form
         />
       </Drawer>
       <Dialog
         open={confirmOpen}
-        onClose={() => { setConfirmOpen(false); setDeleteId(null); }}
+        onClose={() => {
+          setConfirmOpen(false);
+          setDeleteId(null);
+        }}
         onConfirm={handleConfirmDelete}
         title="Delete Vehicle"
         message="Are you sure you want to delete this vehicle? This action cannot be undone."
@@ -147,4 +231,4 @@ export default function VehiclesPage() {
       />
     </div>
   );
-} 
+}

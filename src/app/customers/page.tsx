@@ -124,13 +124,31 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={editId ? 'Edit Customer' : 'Add Customer'}>
+      <Drawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title={editId ? (editId ? "Edit Customer" : "Add Customer") : "Add Customer"}
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="primary"
+              form="customer-form"
+              type="submit"
+              loading={formLoading}
+            >
+              {editId ? "Update" : "Add"}
+            </Button>
+          </div>
+        }
+      >
         <AtomicForm
+          id="customer-form"
           fields={fields}
           onSubmit={handleSubmit}
-          submitLabel={editId ? 'Update' : 'Add'}
           loading={formLoading}
           error={formError}
+          submitLabel={editId ? "Update" : "Add"}
+          // Remove submit button from form
         />
       </Drawer>
       <Dialog

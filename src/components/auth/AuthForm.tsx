@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { firebaseApp } from '../../firebaseConfig';
+"use client";
+
+import React, { useState } from "react";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
+import { firebaseApp } from "../../firebaseConfig";
 
 interface AuthFormProps {
-  mode: 'login' | 'signup';
+  mode: "login" | "signup";
 }
 
 export default function AuthForm({ mode }: AuthFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     const auth = getAuth(firebaseApp);
     try {
-      if (mode === 'login') {
+      if (mode === "login") {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -32,15 +38,20 @@ export default function AuthForm({ mode }: AuthFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow w-full max-w-sm mx-auto">
-      <h2 className="text-xl font-bold mb-4 text-blue-900">{mode === 'login' ? 'Login' : 'Sign Up'}</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-6 rounded shadow w-full max-w-sm mx-auto"
+    >
+      <h2 className="text-xl font-bold mb-4 text-blue-900">
+        {mode === "login" ? "Login" : "Sign Up"}
+      </h2>
       <div className="mb-4">
         <label className="block mb-1 text-gray-800">Email</label>
         <input
           type="email"
           className="w-full border px-3 py-2 rounded text-gray-800"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
       </div>
@@ -50,7 +61,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           type="password"
           className="w-full border px-3 py-2 rounded text-gray-800"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
       </div>
@@ -60,8 +71,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         disabled={loading}
       >
-        {loading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Sign Up'}
+        {loading ? "Please wait..." : mode === "login" ? "Login" : "Sign Up"}
       </button>
     </form>
   );
-} 
+}
