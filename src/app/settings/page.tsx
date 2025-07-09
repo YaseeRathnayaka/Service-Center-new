@@ -9,19 +9,28 @@ import { FaPencilAlt } from "react-icons/fa";
 import Image from 'next/image';
 
 export default function SettingsPage() {
-  const auth = getAuth(firebaseApp);
-  const user = auth.currentUser;
-  const [name, setName] = useState(user?.displayName || "");
-  const [email] = useState(user?.email || "");
-  const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
+  const [auth, setAuth] = useState<ReturnType<typeof getAuth> | null>(null);
+  const [user, setUser] = useState<ReturnType<typeof getAuth>["currentUser"] | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(
-    null
-  );
+  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const authInstance = getAuth(firebaseApp);
+      setAuth(authInstance);
+      setUser(authInstance.currentUser);
+      setName(authInstance.currentUser?.displayName || "");
+      setEmail(authInstance.currentUser?.email || "");
+      setPhotoURL(authInstance.currentUser?.photoURL || "");
+    }
+  }, []);
 
   const handleNameChange = async (e: React.FormEvent) => {
     e.preventDefault();
