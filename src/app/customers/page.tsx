@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Table from '../../components/atoms/Table';
+import Table, { Column } from '../../components/atoms/Table';
 import Button from '../../components/atoms/Button';
 import Drawer from '../../components/molecules/Drawer';
 import Dialog from '../../components/molecules/Dialog';
@@ -67,10 +67,6 @@ export default function CustomersPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
@@ -87,22 +83,10 @@ export default function CustomersPage() {
     fetchData();
   };
 
-  const columns = [
+  const columns: Column<Customer>[] = [
     { label: 'Name', accessor: 'name' },
     { label: 'Email', accessor: 'email' },
     { label: 'Phone', accessor: 'phone' },
-    {
-      label: 'Actions', accessor: 'actions', render: (_: unknown, row: Customer) => (
-        <div className="flex gap-2">
-          <Button iconOnly variant="secondary" aria-label="Edit customer" onClick={() => openDrawer(row)}>
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button iconOnly variant="danger" aria-label="Delete customer" onClick={() => handleDelete(row.id!)}>
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      )
-    },
   ];
 
   const fields: AtomicField[] = [
@@ -135,21 +119,19 @@ export default function CustomersPage() {
             <Button
               variant="primary"
               type="submit"
-              loading={formLoading}
+              disabled={formLoading}
             >
-              {editId ? "Update" : "Add"}
+              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
             </Button>
           </div>
         }
       >
         <AtomicForm
-          id="customer-form"
           fields={fields}
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
           submitLabel={editId ? "Update" : "Add"}
-          // Remove submit button from form
         />
       </Drawer>
       <Dialog

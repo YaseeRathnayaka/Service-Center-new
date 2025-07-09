@@ -9,7 +9,7 @@ import {
 } from "../../lib/api/appointments";
 import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
 import Button from "../../components/atoms/Button";
-import Table from "../../components/atoms/Table";
+import Table, { Column } from "../../components/atoms/Table";
 import Drawer from "../../components/molecules/Drawer";
 import Dialog from "../../components/molecules/Dialog";
 import "remixicon/fonts/remixicon.css";
@@ -103,11 +103,6 @@ export default function AppointmentsPage() {
   };
 
   // Delete
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
-
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
@@ -125,55 +120,43 @@ export default function AppointmentsPage() {
   };
 
   // Table columns
-  const columns = [
+  const columns: Column<Appointment>[] = [
     { label: "Customer", accessor: "customer" },
     { label: "Vehicle", accessor: "vehicle" },
     {
       label: "Date",
       accessor: "date",
-      render: (v: Date | string) => v && typeof v === 'object' && 'toDate' in v ? (v as { toDate: () => Date }).toDate().toISOString().slice(0, 10) : v,
+      render: (v: Appointment["date"] | undefined) =>
+        v && typeof v === "object" && "toDate" in v
+          ? v.toDate().toISOString().slice(0, 10)
+          : v,
     },
     {
       label: "Status",
       accessor: "status",
-      render: (v: string) => {
-        if (v === "Completed")
+      render: (v: string | import('firebase/firestore').Timestamp | undefined) => {
+        if (typeof v === 'string') {
+          if (v === "Completed")
+            return (
+              <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
+                Completed
+              </span>
+            );
+          if (v === "Pending")
+            return (
+              <span className="px-2 py-1 rounded bg-red-100 text-red-600 text-xs">
+                Pending
+              </span>
+            );
           return (
-            <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
-              Completed
+            <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
+              {v}
             </span>
           );
-        if (v === "Pending")
-          return (
-            <span className="px-2 py-1 rounded bg-red-100 text-red-600 text-xs">
-              Pending
-            </span>
-          );
-        return (
-          <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
-            {v}
-          </span>
-        );
+        }
+        // If v is a Timestamp or undefined, just render as string
+        return String(v ?? '');
       },
-    },
-    {
-      label: "Actions",
-      accessor: "actions",
-      render: (_: unknown, row: Appointment) => (
-        <div className="flex gap-2">
-          <Button iconOnly variant="secondary" aria-label="Edit appointment">
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button
-            iconOnly
-            variant="danger"
-            aria-label="Delete appointment"
-            onClick={() => handleDelete(row.id!)}
-          >
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      ),
     },
   ];
 
@@ -242,15 +225,14 @@ export default function AppointmentsPage() {
             <Button
               variant="primary"
               type="submit"
-              loading={formLoading}
+              disabled={formLoading}
             >
-              {editId ? "Update" : "Add"}
+              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
             </Button>
           </div>
         }
       >
         <AtomicForm
-          id="appointment-form"
           fields={fields}
           onSubmit={handleSubmit}
           loading={formLoading}

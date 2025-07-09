@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Table from "../../components/atoms/Table";
+import Table, { Column } from "../../components/atoms/Table";
 import Button from "../../components/atoms/Button";
 import Drawer from "../../components/molecules/Drawer";
 import Dialog from "../../components/molecules/Dialog";
@@ -59,7 +59,7 @@ export default function VehiclesPage() {
   };
 
   const handleField =
-    (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (name: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setForm((f) => ({ ...f, [name]: e.target.value }));
     };
 
@@ -86,10 +86,6 @@ export default function VehiclesPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
@@ -106,35 +102,11 @@ export default function VehiclesPage() {
     fetchData();
   };
 
-  const columns = [
+  const columns: Column<Vehicle>[] = [
     { label: "Make", accessor: "make" },
     { label: "Model", accessor: "model" },
     { label: "Year", accessor: "year" },
     { label: "Plate", accessor: "plate" },
-    {
-      label: "Actions",
-      accessor: "actions",
-      render: (_: unknown, row: Vehicle) => (
-        <div className="flex gap-2">
-          <Button
-            iconOnly
-            variant="secondary"
-            aria-label="Edit vehicle"
-            onClick={() => openDrawer(row)}
-          >
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button
-            iconOnly
-            variant="danger"
-            aria-label="Delete vehicle"
-            onClick={() => handleDelete(row.id!)}
-          >
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      ),
-    },
   ];
 
   const fields: AtomicField[] = [
@@ -200,21 +172,19 @@ export default function VehiclesPage() {
             <Button
               variant="primary"
               type="submit"
-              loading={formLoading}
+              disabled={formLoading}
             >
-              {editId ? "Update" : "Add"}
+              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
             </Button>
           </div>
         }
       >
         <AtomicForm
-          id="vehicle-form"
           fields={fields}
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
           submitLabel={editId ? "Update" : "Add"}
-          // Remove submit button from form
         />
       </Drawer>
       <Dialog
