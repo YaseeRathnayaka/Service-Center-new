@@ -48,8 +48,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
         setSuccess("Signup successful! Redirecting to login...");
         setTimeout(() => router.push("/login"), 1200);
       }
-    } catch (err: any) {
-      setError(err.message || "Authentication failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Authentication failed");
+      } else {
+        setError("Authentication failed");
+      }
     } finally {
       setLoading(false);
     }
