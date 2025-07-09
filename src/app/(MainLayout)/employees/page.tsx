@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Table, { Column } from "../../components/atoms/Table";
-import Button from "../../components/atoms/Button";
-import Drawer from "../../components/molecules/Drawer";
-import Dialog from "../../components/molecules/Dialog";
-import LottieLoader from "../../components/atoms/LottieLoader";
-import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
+import Table, { Column } from '../../../components/atoms/Table';
+import Button from '../../../components/atoms/Button';
+import Drawer from '../../../components/molecules/Drawer';
+import Dialog from '../../../components/molecules/Dialog';
+import LottieLoader from '../../../components/atoms/LottieLoader';
+import AtomicForm, { AtomicField } from '../../../components/atoms/AtomicForm';
 import { toast } from "react-toastify";
 import {
   getEmployees,
@@ -13,7 +13,7 @@ import {
   updateEmployee,
   deleteEmployee,
   Employee,
-} from "../../lib/api/employees";
+} from "../../../lib/api/employees";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);

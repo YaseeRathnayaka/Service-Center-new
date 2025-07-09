@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Table, { Column } from '../../components/atoms/Table';
-import Button from '../../components/atoms/Button';
-import Drawer from '../../components/molecules/Drawer';
-import Dialog from '../../components/molecules/Dialog';
-import LottieLoader from '../../components/atoms/LottieLoader';
-import AtomicForm, { AtomicField } from '../../components/atoms/AtomicForm';
+import Table, { Column } from '../../../components/atoms/Table';
+import Button from '../../../components/atoms/Button';
+import Drawer from '../../../components/molecules/Drawer';
+import Dialog from '../../../components/molecules/Dialog';
+import LottieLoader from '../../../components/atoms/LottieLoader';
+import AtomicForm, { AtomicField } from '../../../components/atoms/AtomicForm';
 import { toast } from 'react-toastify';
-import { getCustomers, addCustomer, updateCustomer, deleteCustomer, Customer } from '../../lib/api/customers';
+import { getCustomers, addCustomer, updateCustomer, deleteCustomer, Customer } from '../../../lib/api/customers';
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);

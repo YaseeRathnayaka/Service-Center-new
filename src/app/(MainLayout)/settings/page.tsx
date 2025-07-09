@@ -3,8 +3,8 @@
 import React, { useState, useRef } from "react";
 import { getAuth, updateProfile, updatePassword } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firebaseApp } from "../../firebaseConfig";
-import Button from "../../components/atoms/Button";
+import { firebaseApp } from "../../../firebaseConfig";
+import Button from "../../../components/atoms/Button";
 import { FaPencilAlt } from "react-icons/fa";
 import Image from 'next/image';
 

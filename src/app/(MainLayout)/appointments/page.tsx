@@ -6,15 +6,15 @@ import {
   updateAppointment,
   deleteAppointment,
   Appointment,
-} from "../../lib/api/appointments";
-import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
-import Button from "../../components/atoms/Button";
-import Table, { Column } from "../../components/atoms/Table";
-import Drawer from "../../components/molecules/Drawer";
-import Dialog from "../../components/molecules/Dialog";
+} from "../../../lib/api/appointments";
+import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
+import Button from "../../../components/atoms/Button";
+import Table, { Column } from "../../../components/atoms/Table";
+import Drawer from "../../../components/molecules/Drawer";
+import Dialog from "../../../components/molecules/Dialog";
 import "remixicon/fonts/remixicon.css";
 import { toast } from "react-toastify";
-import LottieLoader from "../../components/atoms/LottieLoader";
+import LottieLoader from "../../../components/atoms/LottieLoader";
 
 const statusOptions = [
   { label: "Scheduled", value: "Scheduled" },

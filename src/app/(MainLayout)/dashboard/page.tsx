@@ -1,5 +1,5 @@
 "use client"
-import { FaDollarSign, FaChartLine, FaCarSide, FaFileInvoiceDollar, FaMoneyBillWave, FaUserTie } from 'react-icons/fa';
+import { FaDollarSign, FaChartLine, FaUsers, FaCarSide, FaFileInvoiceDollar, FaMoneyBillWave, FaUserTie } from 'react-icons/fa';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell
 } from 'recharts';
@@ -61,6 +61,8 @@ const heatmapData = [
   { area: 'Alignment', stuck: 2 },
   { area: 'AC Service', stuck: 4 },
 ];
+
+const COLORS = ['#ae3ec9', '#7c4dff', '#14b8a6', '#be4bdb'];
 
 export default function DashboardPage() {
   const [barHover, setBarHover] = useState(-1);
@@ -139,7 +141,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-xl shadow-soft p-6 mb-8">
           <div className="font-semibold text-primary-700 mb-2">Vehicle Bottleneck Heatmap</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {heatmapData.map((item) => (
+            {heatmapData.map((item, idx) => (
               <div key={item.area} className="flex flex-col items-center justify-center p-4 rounded-lg" style={{ background: `rgba(174,62,201,${0.08 + 0.08 * item.stuck})` }}>
                 <div className="text-[13px] font-semibold text-primary-700 mb-1">{item.area}</div>
                 <div className="text-2xl font-bold text-accent-700">{item.stuck}</div>
@@ -181,4 +183,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+} 
