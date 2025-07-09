@@ -11,7 +11,9 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.6",
     "@fontsource/poppins": "^5.2.6",
+    "core-js": "^3.44.0",
     "firebase": "^11.10.0",
+    "jspdf": "^3.0.1",
     "lottie-react": "^2.4.1",
     "next": "15.3.5",
     "react": "^19.1.0",

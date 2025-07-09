@@ -6,6 +6,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseApp } from "../../firebaseConfig";
 import Button from "../../components/atoms/Button";
 import { FaPencilAlt } from "react-icons/fa";
+import Image from 'next/image';
 
 export default function SettingsPage() {
   const auth = getAuth(firebaseApp);
@@ -32,8 +33,9 @@ export default function SettingsPage() {
       await updateProfile(user, { displayName: name });
       setMessage("Name updated successfully");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update name");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update name");
     } finally {
       setLoading(false);
     }
@@ -50,8 +52,9 @@ export default function SettingsPage() {
       setMessage("Password updated successfully");
       setNewPassword("");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update password");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update password");
     } finally {
       setLoading(false);
     }
@@ -72,8 +75,9 @@ export default function SettingsPage() {
       setPhotoURL(url);
       setMessage("Profile picture updated successfully");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update profile picture");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update profile picture");
     } finally {
       setLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -86,9 +90,11 @@ export default function SettingsPage() {
       {/* Profile Picture Row */}
       <div className="flex items-center justify-between border-b py-4">
         <div className="flex items-center gap-4">
-          <img
+          <Image
             src={photoURL || "/default-profile.png"}
             alt="Profile"
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-full object-cover border"
           />
           <span className="font-medium text-lg text-black">

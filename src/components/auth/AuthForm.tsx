@@ -30,8 +30,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
         await createUserWithEmailAndPassword(auth, email, password);
       }
       // Optionally redirect or show success
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message);
     } finally {
       setLoading(false);
     }

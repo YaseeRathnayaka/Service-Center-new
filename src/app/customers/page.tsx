@@ -58,9 +58,10 @@ export default function CustomersPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || 'Error saving customer');
-      toast.error(err.message || 'Error saving customer');
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || 'Error saving customer');
+      toast.error(error.message || 'Error saving customer');
     } finally {
       setFormLoading(false);
     }
@@ -76,8 +77,9 @@ export default function CustomersPage() {
     try {
       await deleteCustomer(deleteId);
       toast.success('Customer deleted');
-    } catch (err: any) {
-      toast.error(err.message || 'Error deleting customer');
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || 'Error deleting customer');
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -90,7 +92,7 @@ export default function CustomersPage() {
     { label: 'Email', accessor: 'email' },
     { label: 'Phone', accessor: 'phone' },
     {
-      label: 'Actions', accessor: 'actions', render: (_: any, row: Customer) => (
+      label: 'Actions', accessor: 'actions', render: (_: unknown, row: Customer) => (
         <div className="flex gap-2">
           <Button iconOnly variant="secondary" aria-label="Edit customer" onClick={() => openDrawer(row)}>
             <i className="ri-edit-2-line text-lg" />
@@ -132,7 +134,6 @@ export default function CustomersPage() {
           <div className="flex justify-end gap-2">
             <Button
               variant="primary"
-              form="customer-form"
               type="submit"
               loading={formLoading}
             >

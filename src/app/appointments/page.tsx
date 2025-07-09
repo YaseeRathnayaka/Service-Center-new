@@ -93,9 +93,10 @@ export default function AppointmentsPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || "Error saving appointment");
-      toast.error(err.message || "Error saving appointment");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || "Error saving appointment");
+      toast.error(error.message || "Error saving appointment");
     } finally {
       setFormLoading(false);
     }
@@ -113,8 +114,9 @@ export default function AppointmentsPage() {
     try {
       await deleteAppointment(deleteId);
       toast.success("Appointment deleted");
-    } catch (err: any) {
-      toast.error(err.message || "Error deleting appointment");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Error deleting appointment");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -129,8 +131,7 @@ export default function AppointmentsPage() {
     {
       label: "Date",
       accessor: "date",
-      render: (v: any) =>
-        v && v.toDate ? v.toDate().toISOString().slice(0, 10) : v,
+      render: (v: Date | string) => v && typeof v === 'object' && 'toDate' in v ? (v as { toDate: () => Date }).toDate().toISOString().slice(0, 10) : v,
     },
     {
       label: "Status",
@@ -158,7 +159,7 @@ export default function AppointmentsPage() {
     {
       label: "Actions",
       accessor: "actions",
-      render: (_: any, row: Appointment) => (
+      render: (_: unknown, row: Appointment) => (
         <div className="flex gap-2">
           <Button iconOnly variant="secondary" aria-label="Edit appointment">
             <i className="ri-edit-2-line text-lg" />
@@ -240,7 +241,6 @@ export default function AppointmentsPage() {
           <div className="flex justify-end gap-2">
             <Button
               variant="primary"
-              form="appointment-form"
               type="submit"
               loading={formLoading}
             >

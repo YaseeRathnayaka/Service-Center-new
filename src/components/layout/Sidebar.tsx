@@ -1,8 +1,8 @@
 "use client"
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaTachometerAlt, FaCalendarAlt, FaTools, FaUserCog, FaUsers, FaBoxes, FaBell, FaCog, FaSignOutAlt, FaCarSide, FaIdBadge } from 'react-icons/fa';
+import { FaTachometerAlt, FaCalendarAlt, FaTools, FaUserCog, FaBoxes, FaBell, FaCog, FaSignOutAlt, FaCarSide, FaIdBadge } from 'react-icons/fa';
 
 const sections = [
   {
@@ -24,7 +24,6 @@ const sections = [
   {
     label: 'Management',
     items: [
-      { name: 'Customers', href: '/customers', icon: <FaUsers /> },
       { name: 'Employees', href: '/employees', icon: <FaIdBadge /> },
     ],
   },

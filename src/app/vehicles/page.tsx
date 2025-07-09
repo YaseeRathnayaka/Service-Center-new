@@ -77,9 +77,10 @@ export default function VehiclesPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || "Error saving vehicle");
-      toast.error(err.message || "Error saving vehicle");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || "Error saving vehicle");
+      toast.error(error.message || "Error saving vehicle");
     } finally {
       setFormLoading(false);
     }
@@ -95,8 +96,9 @@ export default function VehiclesPage() {
     try {
       await deleteVehicle(deleteId);
       toast.success("Vehicle deleted");
-    } catch (err: any) {
-      toast.error(err.message || "Error deleting vehicle");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Error deleting vehicle");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -112,7 +114,7 @@ export default function VehiclesPage() {
     {
       label: "Actions",
       accessor: "actions",
-      render: (_: any, row: Vehicle) => (
+      render: (_: unknown, row: Vehicle) => (
         <div className="flex gap-2">
           <Button
             iconOnly
@@ -197,7 +199,6 @@ export default function VehiclesPage() {
           <div className="flex justify-end gap-2">
             <Button
               variant="primary"
-              form="vehicle-form"
               type="submit"
               loading={formLoading}
             >
