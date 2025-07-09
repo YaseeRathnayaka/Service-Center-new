@@ -9,7 +9,6 @@ import { FaPencilAlt } from "react-icons/fa";
 import Image from 'next/image';
 
 export default function SettingsPage() {
-  const [auth, setAuth] = useState<ReturnType<typeof getAuth> | null>(null);
   const [user, setUser] = useState<ReturnType<typeof getAuth>["currentUser"] | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +23,6 @@ export default function SettingsPage() {
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const authInstance = getAuth(firebaseApp);
-      setAuth(authInstance);
       setUser(authInstance.currentUser);
       setName(authInstance.currentUser?.displayName || "");
       setEmail(authInstance.currentUser?.email || "");
