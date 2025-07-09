@@ -14,18 +14,29 @@ import {
   deleteEmployee,
   Employee,
 } from "../../lib/api/employees";
+import jsPDF from "jspdf";
+import { FaEllipsisV } from "react-icons/fa";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", role: "" });
+  const [form, setForm] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    phone?: string;
+    skill?: string;
+    address?: string;
+  }>({ name: "", email: "", role: "", phone: "", skill: "", address: "" });
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -43,10 +54,20 @@ export default function EmployeesPage() {
         name: employee.name,
         email: employee.email,
         role: employee.role,
+        phone: employee.phone || "",
+        skill: employee.skill || "",
+        address: employee.address || "",
       });
     } else {
       setEditId(null);
-      setForm({ name: "", email: "", role: "" });
+      setForm({
+        name: "",
+        email: "",
+        role: "",
+        phone: "",
+        skill: "",
+        address: "",
+      });
     }
     setFormError("");
     setDrawerOpen(true);
@@ -99,6 +120,20 @@ export default function EmployeesPage() {
     fetchData();
   };
 
+  const handleDownloadPDF = (employee: Employee) => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Employee Details", 10, 20);
+    doc.setFontSize(12);
+    doc.text(`Name: ${employee.name}`, 10, 40);
+    doc.text(`Email: ${employee.email}`, 10, 50);
+    doc.text(`Role: ${employee.role}`, 10, 60);
+    doc.text(`Phone: ${employee.phone || "-"}`, 10, 70);
+    doc.text(`Skill: ${employee.skill || "-"}`, 10, 80);
+    doc.text(`Address: ${employee.address || "-"}`, 10, 90);
+    doc.save(`${employee.name || "employee"}_details.pdf`);
+  };
+
   const columns = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
@@ -124,6 +159,25 @@ export default function EmployeesPage() {
           >
             <i className="ri-delete-bin-6-line text-lg" />
           </Button>
+          <Button
+            iconOnly
+            variant="primary"
+            aria-label="Download employee as PDF"
+            onClick={() => handleDownloadPDF(row)}
+          >
+            <i className="ri-download-2-line text-lg" />
+          </Button>
+          <Button
+            iconOnly
+            variant="secondary"
+            aria-label="More details"
+            onClick={() => {
+              setModalEmployee(row);
+              setModalOpen(true);
+            }}
+          >
+            <FaEllipsisV />
+          </Button>
         </div>
       ),
     },
@@ -134,7 +188,7 @@ export default function EmployeesPage() {
       name: "name",
       label: "Name",
       type: "text",
-      value: form.name,
+      value: form.name || "",
       onChange: handleField("name"),
       required: true,
     },
@@ -142,7 +196,7 @@ export default function EmployeesPage() {
       name: "email",
       label: "Email",
       type: "email",
-      value: form.email,
+      value: form.email || "",
       onChange: handleField("email"),
       required: true,
     },
@@ -150,9 +204,33 @@ export default function EmployeesPage() {
       name: "role",
       label: "Role",
       type: "text",
-      value: form.role,
+      value: form.role || "",
       onChange: handleField("role"),
       required: true,
+    },
+    {
+      name: "phone",
+      label: "Phone",
+      type: "text",
+      value: form.phone || "",
+      onChange: handleField("phone"),
+      required: false,
+    },
+    {
+      name: "skill",
+      label: "Skill",
+      type: "text",
+      value: form.skill || "",
+      onChange: handleField("skill"),
+      required: false,
+    },
+    {
+      name: "address",
+      label: "Address",
+      type: "text",
+      value: form.address || "",
+      onChange: handleField("address"),
+      required: false,
     },
   ];
 
@@ -201,6 +279,43 @@ export default function EmployeesPage() {
         cancelLabel="Cancel"
         loading={deleteLoading}
       />
+      {modalOpen && modalEmployee && (
+        <Dialog
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title="Employee Details"
+          message={
+            <div className="space-y-2 text-left">
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Name:</span>{" "}
+                <span>{modalEmployee.name}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Email:</span>{" "}
+                <span>{modalEmployee.email}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Role:</span>{" "}
+                <span>{modalEmployee.role}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Phone:</span>{" "}
+                <span>{modalEmployee.phone || "-"}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Skill:</span>{" "}
+                <span>{modalEmployee.skill || "-"}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="font-semibold w-24">Address:</span>{" "}
+                <span>{modalEmployee.address || "-"}</span>
+              </div>
+            </div>
+          }
+          confirmLabel="Close"
+          onConfirm={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
