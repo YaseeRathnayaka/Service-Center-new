@@ -6,8 +6,6 @@ import {
   FaTachometerAlt, 
   FaCalendarAlt, 
   FaTools, 
-  FaBell, 
-  FaCog, 
   FaSignOutAlt, 
   FaCarSide, 
   FaIdBadge,

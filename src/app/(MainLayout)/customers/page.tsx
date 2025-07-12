@@ -1,13 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  FaUsers,
-  FaUserPlus,
-  FaEdit,
-  FaTrash,
-  FaUser,
-  FaEnvelope,
-  FaPhone,
+import { 
+  FaUsers 
 } from "react-icons/fa";
 import Table, { Column } from "../../../components/atoms/Table";
 import Button from "../../../components/atoms/Button";

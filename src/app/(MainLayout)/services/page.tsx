@@ -1,9 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { 
-  FaTools, FaPlus, FaEdit, FaTrash, FaUserTie, FaUsers, FaDollarSign, 
-  FaClock, FaTag, FaCheckCircle, FaTimesCircle, FaEllipsisV,
-  FaUser, FaCalendarAlt, FaCog
+  FaTools, 
+  FaUserTie, 
+  FaTag, 
+  FaDollarSign, 
+  FaClock, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaCalendarAlt, 
+  FaUser, 
+  FaCog 
 } from "react-icons/fa";
 import Button from "../../../components/atoms/Button";
 import Drawer from "../../../components/molecules/Drawer";
@@ -44,7 +51,13 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Record<string, string | number>>({
+    name: "",
+    category: "",
+    price: "",
+    duration: "",
+    status: "active",
+  });
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -76,20 +89,40 @@ export default function ServicesPage() {
     fetchData();
   }, []);
 
-  const openDrawer = (data?: any) => {
+  const openDrawer = (data?: Service | ServiceHead | ServiceLaborer) => {
     if (data) {
-      setEditId(data.id);
-      setForm(data);
+      setEditId(data.id!);
+      if ('name' in data) {
+        setForm({
+          name: data.name,
+          category: data.category,
+          price: data.price,
+          duration: data.duration,
+          status: data.status,
+        });
+      } else if ('employeeName' in data) {
+        setForm({
+          serviceId: data.serviceId,
+          employeeName: data.employeeName,
+          status: data.status,
+        });
+      }
     } else {
       setEditId(null);
-      setForm({});
+      setForm({
+        name: "",
+        category: "",
+        price: "",
+        duration: "",
+        status: "active",
+      });
     }
     setFormError("");
     setDrawerOpen(true);
   };
 
   const handleField = (name: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm((f: any) => ({ ...f, [name]: e.target.value }));
+    setForm((f: Record<string, string | number>) => ({ ...f, [name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,37 +130,31 @@ export default function ServicesPage() {
     setFormLoading(true);
     setFormError("");
     try {
-      if (activeTab === 'services') {
-        if (editId) {
-          await updateService(editId, form);
-          toast.success("Service updated successfully");
+      if (editId) {
+        if (activeTab === 'services') {
+          await updateService(editId, form as unknown as Service);
+        } else if (activeTab === 'heads') {
+          await updateServiceHead(editId, form as unknown as ServiceHead);
         } else {
-          await addService(form);
-          toast.success("Service added successfully");
+          await updateServiceLaborer(editId, form as unknown as ServiceLaborer);
         }
-      } else if (activeTab === 'heads') {
-        if (editId) {
-          await updateServiceHead(editId, form);
-          toast.success("Service head updated successfully");
+        toast.success(`${activeTab === 'services' ? 'Service' : activeTab === 'heads' ? 'Service Head' : 'Service Laborer'} updated successfully`);
+      } else {
+        if (activeTab === 'services') {
+          await addService(form as unknown as Service);
+        } else if (activeTab === 'heads') {
+          await addServiceHead(form as unknown as ServiceHead);
         } else {
-          await addServiceHead(form);
-          toast.success("Service head assigned successfully");
+          await addServiceLaborer(form as unknown as ServiceLaborer);
         }
-      } else if (activeTab === 'laborers') {
-        if (editId) {
-          await updateServiceLaborer(editId, form);
-          toast.success("Service laborer updated successfully");
-        } else {
-          await addServiceLaborer(form);
-          toast.success("Service laborer assigned successfully");
-        }
+        toast.success(`${activeTab === 'services' ? 'Service' : activeTab === 'heads' ? 'Service Head' : 'Service Laborer'} added successfully`);
       }
       setDrawerOpen(false);
       fetchData();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Error saving data";
-      setFormError(errorMessage);
-      toast.error(errorMessage);
+      const error = err as Error;
+      setFormError(error.message || `Error saving ${activeTab === 'services' ? 'service' : activeTab === 'heads' ? 'service head' : 'service laborer'}`);
+      toast.error(error.message || `Error saving ${activeTab === 'services' ? 'service' : activeTab === 'heads' ? 'service head' : 'service laborer'}`);
     } finally {
       setFormLoading(false);
     }
@@ -144,17 +171,15 @@ export default function ServicesPage() {
     try {
       if (activeTab === 'services') {
         await deleteService(deleteId);
-        toast.success("Service deleted");
       } else if (activeTab === 'heads') {
         await deleteServiceHead(deleteId);
-        toast.success("Service head removed");
-      } else if (activeTab === 'laborers') {
+      } else {
         await deleteServiceLaborer(deleteId);
-        toast.success("Service laborer removed");
       }
+      toast.success(`${activeTab === 'services' ? 'Service' : activeTab === 'heads' ? 'Service Head' : 'Service Laborer'} deleted successfully`);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Error deleting data";
-      toast.error(errorMessage);
+      const error = err as Error;
+      toast.error(error.message || `Error deleting ${activeTab === 'services' ? 'service' : activeTab === 'heads' ? 'service head' : 'service laborer'}`);
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -487,7 +512,7 @@ export default function ServicesPage() {
                             aria-label="Edit service head"
                             onClick={() => openDrawer(head)}
                           >
-                            <FaEdit className="text-lg" />
+                            <FaCog className="text-lg" />
                           </Button>
                           <Button
                             iconOnly
@@ -495,7 +520,7 @@ export default function ServicesPage() {
                             aria-label="Remove service head"
                             onClick={() => handleDelete(head.id!)}
                           >
-                            <FaTrash className="text-sm" />
+                            <FaTimesCircle className="text-sm" />
                           </Button>
                         </div>
                       </td>
@@ -569,7 +594,7 @@ export default function ServicesPage() {
                             aria-label="Edit service laborer"
                             onClick={() => openDrawer(laborer)}
                           >
-                            <FaEdit className="text-lg" />
+                            <FaCog className="text-lg" />
                           </Button>
                           <Button
                             iconOnly
@@ -577,7 +602,7 @@ export default function ServicesPage() {
                             aria-label="Remove service laborer"
                             onClick={() => handleDelete(laborer.id!)}
                           >
-                            <FaTrash className="text-sm" />
+                            <FaTimesCircle className="text-sm" />
                           </Button>
                         </div>
                       </td>

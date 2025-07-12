@@ -1,16 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  FaCalendarAlt,
-  FaCalendarPlus,
-  FaEdit,
-  FaTrash,
-  FaUser,
-  FaCar,
-  FaClock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaHourglassHalf,
+import { 
+  FaCalendarAlt, 
+  FaHourglassHalf, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaClock 
 } from "react-icons/fa";
 import {
   getAppointments,

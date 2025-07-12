@@ -53,7 +53,7 @@ export default function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-600/50 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 backdrop-blur-sm"
-              placeholder="Search anything..."
+              placeholder="Search for anything..."
             />
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           </div>

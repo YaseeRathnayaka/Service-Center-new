@@ -1,8 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { 
-  FaUsers, FaUserPlus, FaEdit, FaTrash, FaDownload, FaEllipsisV, 
-  FaUser, FaEnvelope, FaUserTie, FaPhone, FaTools, FaMapMarkerAlt 
+  FaUsers, 
+  FaUser, 
+  FaEnvelope, 
+  FaUserTie, 
+  FaPhone, 
+  FaTools, 
+  FaMapMarkerAlt 
 } from "react-icons/fa";
 import Table from "../../../components/atoms/Table";
 import Button from "../../../components/atoms/Button";
@@ -158,7 +163,7 @@ export default function EmployeesPage() {
     {
       label: "Actions",
       accessor: "actions" as keyof Employee,
-      render: (_: any, row: Employee) => (
+      render: (_: unknown, row: Employee) => (
         <div className="flex gap-2">
           <Button
             variant="secondary"
