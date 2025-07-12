@@ -149,28 +149,36 @@ export default function DashboardPage() {
           </div>
         </div>
         {/* Recent Activity Table */}
-        <div className="bg-white rounded-xl shadow-soft p-6 mb-8">
-          <div className="font-semibold text-primary-700 mb-2 text-black">Recent Activity</div>
+        <div className="bg-white border-2 border-slate-200 shadow-lg p-6 mb-8">
+          <div className="font-semibold text-slate-700 mb-4 text-lg">Recent Activity</div>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-xs">
-              <thead>
-                <tr className="text-slate-500">
-                  <th className="py-2 px-3 text-left">Type</th>
-                  <th className="py-2 px-3 text-left">Description</th>
-                  <th className="py-2 px-3 text-left">Amount</th>
-                  <th className="py-2 px-3 text-left">Date</th>
-                  <th className="py-2 px-3 text-left">Status</th>
+            <table className="min-w-full">
+              <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
+                <tr>
+                  <th className="py-3 px-4 text-left font-bold text-slate-700 text-sm uppercase tracking-wider border-r border-slate-200">Type</th>
+                  <th className="py-3 px-4 text-left font-bold text-slate-700 text-sm uppercase tracking-wider border-r border-slate-200">Description</th>
+                  <th className="py-3 px-4 text-left font-bold text-slate-700 text-sm uppercase tracking-wider border-r border-slate-200">Amount</th>
+                  <th className="py-3 px-4 text-left font-bold text-slate-700 text-sm uppercase tracking-wider border-r border-slate-200">Date</th>
+                  <th className="py-3 px-4 text-left font-bold text-slate-700 text-sm uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-200">
                 {recentActivity.map((a) => (
-                  <tr key={a.date + a.type} className="border-b border-slate-100">
-                    <td className="py-2 px-3 font-medium text-slate-700">{a.type}</td>
-                    <td className="py-2 px-3 text-black">{a.desc}</td>
-                    <td className="py-2 px-3 text-black">{a.amount}</td>
-                    <td className="py-2 px-3 text-black">{a.date}</td>
-                    <td className="py-2 px-3 text-black">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${a.status === 'Paid' || a.status === 'Completed' ? 'bg-teal-100 text-teal-700' : a.status === 'Pending' ? 'bg-primary-100 text-primary-700' : 'bg-accent-100 text-accent-700'}`}>{a.status}</span>
+                  <tr key={a.date + a.type} className="bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group border-l-4 border-l-transparent hover:border-l-blue-500">
+                    <td className="py-3 px-4 font-medium text-slate-700 group-hover:text-slate-900 border-r border-slate-200">{a.type}</td>
+                    <td className="py-3 px-4 text-slate-700 group-hover:text-slate-900 border-r border-slate-200">{a.desc}</td>
+                    <td className="py-3 px-4 text-slate-700 group-hover:text-slate-900 border-r border-slate-200">{a.amount}</td>
+                    <td className="py-3 px-4 text-slate-700 group-hover:text-slate-900 border-r border-slate-200">{a.date}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        a.status === 'Paid' || a.status === 'Completed' 
+                          ? 'bg-green-100 text-green-700 border border-green-200' 
+                          : a.status === 'Pending' 
+                          ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' 
+                          : 'bg-blue-100 text-blue-700 border border-blue-200'
+                      }`}>
+                        {a.status}
+                      </span>
                     </td>
                   </tr>
                 ))}

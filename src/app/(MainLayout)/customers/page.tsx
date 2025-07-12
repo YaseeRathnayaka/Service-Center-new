@@ -110,32 +110,17 @@ export default function CustomersPage() {
     {
       label: "Name",
       accessor: "name",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaUser className="text-blue-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
     {
       label: "Email",
       accessor: "email",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaEnvelope className="text-green-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
     {
       label: "Phone",
       accessor: "phone",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaPhone className="text-purple-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
   ];
 
@@ -176,7 +161,7 @@ export default function CustomersPage() {
           </h1>
         </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          <FaUserPlus className="mr-2" />+ Add Customer
+          Add Customer
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
@@ -194,16 +179,7 @@ export default function CustomersPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={
-          <div className="flex items-center gap-2">
-            {editId ? (
-              <FaEdit className="text-blue-600" />
-            ) : (
-              <FaUserPlus className="text-blue-600" />
-            )}
-            {editId ? "Edit Customer" : "Add Customer"}
-          </div>
-        }
+        title={editId ? "Edit Customer" : "Add Customer"}
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="primary" type="submit" disabled={formLoading}>
@@ -233,12 +209,7 @@ export default function CustomersPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title={
-          <div className="flex items-center gap-2">
-            <FaTrash className="text-red-600" />
-            Delete Customer
-          </div>
-        }
+        title="Delete Customer"
         message="Are you sure you want to delete this customer? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"

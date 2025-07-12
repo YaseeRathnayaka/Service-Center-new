@@ -136,22 +136,12 @@ export default function AppointmentsPage() {
     {
       label: "Customer",
       accessor: "customer",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaUser className="text-blue-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
     },
     {
       label: "Vehicle",
       accessor: "vehicle",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaCar className="text-green-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
     },
     {
       label: "Date",
@@ -256,13 +246,12 @@ export default function AppointmentsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FaCalendarAlt className="text-3xl text-blue-600" />
           <h1 className="text-2xl font-bold text-blue-900">
             Appointment Management
           </h1>
         </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          <FaCalendarPlus className="mr-2" />+ Add Appointment
+          Add Appointment
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
@@ -280,16 +269,7 @@ export default function AppointmentsPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={
-          <div className="flex items-center gap-2">
-            {editId ? (
-              <FaEdit className="text-blue-600" />
-            ) : (
-              <FaCalendarPlus className="text-blue-600" />
-            )}
-            {editId ? "Edit Appointment" : "Add Appointment"}
-          </div>
-        }
+        title={editId ? "Edit Appointment" : "Add Appointment"}
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="primary" type="submit" disabled={formLoading}>
@@ -320,12 +300,7 @@ export default function AppointmentsPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title={
-          <div className="flex items-center gap-2">
-            <FaTrash className="text-red-600" />
-            Delete Appointment
-          </div>
-        }
+        title="Delete Appointment"
         message="Are you sure you want to delete this appointment? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
