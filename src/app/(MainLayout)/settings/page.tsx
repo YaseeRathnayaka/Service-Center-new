@@ -3,24 +3,32 @@
 import React, { useState, useRef } from "react";
 import { getAuth, updateProfile, updatePassword } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firebaseApp } from "../../firebaseConfig";
-import Button from "../../components/atoms/Button";
+import { firebaseApp } from "../../../firebaseConfig";
+import Button from "../../../components/atoms/Button";
 import { FaPencilAlt } from "react-icons/fa";
+import Image from 'next/image';
 
 export default function SettingsPage() {
-  const auth = getAuth(firebaseApp);
-  const user = auth.currentUser;
-  const [name, setName] = useState(user?.displayName || "");
-  const [email] = useState(user?.email || "");
-  const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
+  const [user, setUser] = useState<ReturnType<typeof getAuth>["currentUser"] | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(
-    null
-  );
+  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const authInstance = getAuth(firebaseApp);
+      setUser(authInstance.currentUser);
+      setName(authInstance.currentUser?.displayName || "");
+      setEmail(authInstance.currentUser?.email || "");
+      setPhotoURL(authInstance.currentUser?.photoURL || "");
+    }
+  }, []);
 
   const handleNameChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +40,9 @@ export default function SettingsPage() {
       await updateProfile(user, { displayName: name });
       setMessage("Name updated successfully");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update name");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update name");
     } finally {
       setLoading(false);
     }
@@ -50,8 +59,9 @@ export default function SettingsPage() {
       setMessage("Password updated successfully");
       setNewPassword("");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update password");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update password");
     } finally {
       setLoading(false);
     }
@@ -72,8 +82,9 @@ export default function SettingsPage() {
       setPhotoURL(url);
       setMessage("Profile picture updated successfully");
       setEditing(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to update profile picture");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Failed to update profile picture");
     } finally {
       setLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -86,9 +97,11 @@ export default function SettingsPage() {
       {/* Profile Picture Row */}
       <div className="flex items-center justify-between border-b py-4">
         <div className="flex items-center gap-4">
-          <img
+          <Image
             src={photoURL || "/default-profile.png"}
             alt="Profile"
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-full object-cover border"
           />
           <span className="font-medium text-lg text-black">

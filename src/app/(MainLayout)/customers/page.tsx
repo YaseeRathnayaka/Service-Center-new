@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Table from '../../components/atoms/Table';
-import Button from '../../components/atoms/Button';
-import Drawer from '../../components/molecules/Drawer';
-import Dialog from '../../components/molecules/Dialog';
-import LottieLoader from '../../components/atoms/LottieLoader';
-import AtomicForm, { AtomicField } from '../../components/atoms/AtomicForm';
+import Table, { Column } from '../../../components/atoms/Table';
+import Button from '../../../components/atoms/Button';
+import Drawer from '../../../components/molecules/Drawer';
+import Dialog from '../../../components/molecules/Dialog';
+import LottieLoader from '../../../components/atoms/LottieLoader';
+import AtomicForm, { AtomicField } from '../../../components/atoms/AtomicForm';
 import { toast } from 'react-toastify';
-import { getCustomers, addCustomer, updateCustomer, deleteCustomer, Customer } from '../../lib/api/customers';
+import { getCustomers, addCustomer, updateCustomer, deleteCustomer, Customer } from '../../../lib/api/customers';
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -58,26 +58,24 @@ export default function CustomersPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || 'Error saving customer');
-      toast.error(err.message || 'Error saving customer');
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || 'Error saving customer');
+      toast.error(error.message || 'Error saving customer');
     } finally {
       setFormLoading(false);
     }
   };
 
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
     try {
       await deleteCustomer(deleteId);
       toast.success('Customer deleted');
-    } catch (err: any) {
-      toast.error(err.message || 'Error deleting customer');
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || 'Error deleting customer');
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -85,22 +83,10 @@ export default function CustomersPage() {
     fetchData();
   };
 
-  const columns = [
+  const columns: Column<Customer>[] = [
     { label: 'Name', accessor: 'name' },
     { label: 'Email', accessor: 'email' },
     { label: 'Phone', accessor: 'phone' },
-    {
-      label: 'Actions', accessor: 'actions', render: (_: any, row: Customer) => (
-        <div className="flex gap-2">
-          <Button iconOnly variant="secondary" aria-label="Edit customer" onClick={() => openDrawer(row)}>
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button iconOnly variant="danger" aria-label="Delete customer" onClick={() => handleDelete(row.id!)}>
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      )
-    },
   ];
 
   const fields: AtomicField[] = [
@@ -132,23 +118,20 @@ export default function CustomersPage() {
           <div className="flex justify-end gap-2">
             <Button
               variant="primary"
-              form="customer-form"
               type="submit"
-              loading={formLoading}
+              disabled={formLoading}
             >
-              {editId ? "Update" : "Add"}
+              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
             </Button>
           </div>
         }
       >
         <AtomicForm
-          id="customer-form"
           fields={fields}
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
           submitLabel={editId ? "Update" : "Add"}
-          // Remove submit button from form
         />
       </Drawer>
       <Dialog
