@@ -1,11 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Table, { Column } from '../../../components/atoms/Table';
-import Button from '../../../components/atoms/Button';
-import Drawer from '../../../components/molecules/Drawer';
-import Dialog from '../../../components/molecules/Dialog';
-import LottieLoader from '../../../components/atoms/LottieLoader';
-import AtomicForm, { AtomicField } from '../../../components/atoms/AtomicForm';
+import { 
+  FaUsers, FaUserPlus, FaEdit, FaTrash, FaDownload, FaEllipsisV, 
+  FaUser, FaEnvelope, FaUserTie, FaPhone, FaTools, FaMapMarkerAlt 
+} from "react-icons/fa";
+import Table from "../../../components/atoms/Table";
+import Button from "../../../components/atoms/Button";
+import Drawer from "../../../components/molecules/Drawer";
+import Dialog from "../../../components/molecules/Dialog";
+import LottieLoader from "../../../components/atoms/LottieLoader";
+import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
 import { toast } from "react-toastify";
 import {
   getEmployees,
@@ -13,13 +17,8 @@ import {
   updateEmployee,
   deleteEmployee,
   Employee,
-<<<<<<< HEAD:src/app/employees/page.tsx
-} from "../../lib/api/employees";
-import jsPDF from "jspdf";
-import { FaEllipsisV } from "react-icons/fa";
-=======
 } from "../../../lib/api/employees";
->>>>>>> 0b37577f0bfb6df81f61c19d3beab7221b019969:src/app/(MainLayout)/employees/page.tsx
+import jsPDF from "jspdf";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -97,24 +96,26 @@ export default function EmployeesPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: unknown) {
-      const error = err as Error;
-      setFormError(error.message || "Error saving employee");
-      toast.error(error.message || "Error saving employee");
+    } catch (err: any) {
+      setFormError(err.message || "Error saving employee");
+      toast.error(err.message || "Error saving employee");
     } finally {
       setFormLoading(false);
     }
   };
 
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+    setConfirmOpen(true);
+  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
     try {
       await deleteEmployee(deleteId);
       toast.success("Employee deleted");
-    } catch (err: unknown) {
-      const error = err as Error;
-      toast.error(error.message || "Error deleting employee");
+    } catch (err: any) {
+      toast.error(err.message || "Error deleting employee");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -122,7 +123,6 @@ export default function EmployeesPage() {
     fetchData();
   };
 
-<<<<<<< HEAD:src/app/employees/page.tsx
   const handleDownloadPDF = (employee: Employee) => {
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -138,9 +138,36 @@ export default function EmployeesPage() {
   };
 
   const columns = [
-    { label: "Name", accessor: "name" },
-    { label: "Email", accessor: "email" },
-    { label: "Role", accessor: "role" },
+    { 
+      label: "Name", 
+      accessor: "name",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaUser className="text-blue-600" />
+          <span>{value}</span>
+        </div>
+      )
+    },
+    { 
+      label: "Email", 
+      accessor: "email",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaEnvelope className="text-green-600" />
+          <span>{value}</span>
+        </div>
+      )
+    },
+    { 
+      label: "Role", 
+      accessor: "role",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaUserTie className="text-purple-600" />
+          <span>{value}</span>
+        </div>
+      )
+    },
     {
       label: "Actions",
       accessor: "actions",
@@ -152,7 +179,7 @@ export default function EmployeesPage() {
             aria-label="Edit employee"
             onClick={() => openDrawer(row)}
           >
-            <i className="ri-edit-2-line text-lg" />
+            <FaEdit className="text-lg" />
           </Button>
           <Button
             iconOnly
@@ -160,7 +187,7 @@ export default function EmployeesPage() {
             aria-label="Delete employee"
             onClick={() => handleDelete(row.id!)}
           >
-            <i className="ri-delete-bin-6-line text-lg" />
+            <FaTrash className="text-sm" />
           </Button>
           <Button
             iconOnly
@@ -168,7 +195,7 @@ export default function EmployeesPage() {
             aria-label="Download employee as PDF"
             onClick={() => handleDownloadPDF(row)}
           >
-            <i className="ri-download-2-line text-lg" />
+            <FaDownload className="text-sm" />
           </Button>
           <Button
             iconOnly
@@ -184,12 +211,6 @@ export default function EmployeesPage() {
         </div>
       ),
     },
-=======
-  const columns: Column<Employee>[] = [
-    { label: "Name", accessor: "name" },
-    { label: "Email", accessor: "email" },
-    { label: "Role", accessor: "role" },
->>>>>>> 0b37577f0bfb6df81f61c19d3beab7221b019969:src/app/(MainLayout)/employees/page.tsx
   ];
 
   const fields: AtomicField[] = [
@@ -246,15 +267,20 @@ export default function EmployeesPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-900">
-          Employee Management
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-blue-900">
+            Employee Management
+          </h1>
+        </div>
         <Button onClick={() => openDrawer()} variant="primary">
           + Add Employee
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
-        <h2 className="font-semibold mb-2 text-blue-900">All Employees</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <FaUsers className="text-xl text-blue-600" />
+          <h2 className="font-semibold text-blue-900">All Employees</h2>
+        </div>
         <Table columns={columns} data={employees} />
         {(loading || formLoading || deleteLoading) && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 rounded-xl">
@@ -265,14 +291,19 @@ export default function EmployeesPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={editId ? "Edit Employee" : "Add Employee"}
+        title={
+          <div className="flex items-center gap-2">
+            {editId ? <FaEdit className="text-blue-600" /> : <FaUserPlus className="text-blue-600" />}
+            {editId ? "Edit Employee" : "Add Employee"}
+          </div>
+        }
       >
         <AtomicForm
           fields={fields}
           onSubmit={handleSubmit}
+          submitLabel={editId ? "Update" : "Add"}
           loading={formLoading}
           error={formError}
-          submitLabel={editId ? "Update" : "Add"}
         />
       </Drawer>
       <Dialog
@@ -282,7 +313,12 @@ export default function EmployeesPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Employee"
+        title={
+          <div className="flex items-center gap-2">
+            <FaTrash className="text-red-600" />
+            Delete Employee
+          </div>
+        }
         message="Are you sure you want to delete this employee? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
@@ -292,32 +328,49 @@ export default function EmployeesPage() {
         <Dialog
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          title="Employee Details"
+          title={
+            <div className="flex items-center gap-2">
+              <FaUser className="text-blue-600" />
+              Employee Details
+            </div>
+          }
           message={
-            <div className="space-y-2 text-left">
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Name:</span>{" "}
-                <span>{modalEmployee.name}</span>
+            <div className="space-y-3 text-left">
+              <div className="flex items-center gap-3">
+                <FaUser className="text-blue-600" />
+                <div>
+                  <span className="font-semibold">Name:</span> {modalEmployee.name}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Email:</span>{" "}
-                <span>{modalEmployee.email}</span>
+              <div className="flex items-center gap-3">
+                <FaEnvelope className="text-green-600" />
+                <div>
+                  <span className="font-semibold">Email:</span> {modalEmployee.email}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Role:</span>{" "}
-                <span>{modalEmployee.role}</span>
+              <div className="flex items-center gap-3">
+                <FaUserTie className="text-purple-600" />
+                <div>
+                  <span className="font-semibold">Role:</span> {modalEmployee.role}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Phone:</span>{" "}
-                <span>{modalEmployee.phone || "-"}</span>
+              <div className="flex items-center gap-3">
+                <FaPhone className="text-orange-600" />
+                <div>
+                  <span className="font-semibold">Phone:</span> {modalEmployee.phone || "-"}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Skill:</span>{" "}
-                <span>{modalEmployee.skill || "-"}</span>
+              <div className="flex items-center gap-3">
+                <FaTools className="text-teal-600" />
+                <div>
+                  <span className="font-semibold">Skill:</span> {modalEmployee.skill || "-"}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <span className="font-semibold w-24">Address:</span>{" "}
-                <span>{modalEmployee.address || "-"}</span>
+              <div className="flex items-center gap-3">
+                <FaMapMarkerAlt className="text-red-600" />
+                <div>
+                  <span className="font-semibold">Address:</span> {modalEmployee.address || "-"}
+                </div>
               </div>
             </div>
           }
