@@ -25,10 +25,7 @@ export default function Header() {
     router.replace('/signin');
   };
 
-  const handleSettingsNavigation = (path: string) => {
-    setShowSettings(false);
-    router.push(path);
-  };
+
 
   // Sample notifications data
   const notifications = [
