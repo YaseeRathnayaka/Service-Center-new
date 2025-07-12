@@ -262,7 +262,7 @@ export default function AppointmentsPage() {
           </h1>
         </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          <FaCalendarPlus className="mr-2" />+ Add Appointment
+          + Add Appointment
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">

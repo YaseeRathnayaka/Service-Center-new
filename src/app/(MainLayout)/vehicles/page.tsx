@@ -6,7 +6,6 @@ import {
   FaPlus,
   FaEdit,
   FaTrash,
-  FaCog,
   FaCalendarAlt,
   FaIdCard,
 } from "react-icons/fa";
