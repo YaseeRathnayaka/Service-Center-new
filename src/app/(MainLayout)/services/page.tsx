@@ -624,6 +624,30 @@ export default function ServicesPage() {
           activeTab === 'services' ? 'Service' : 
           activeTab === 'heads' ? 'Service Head' : 'Service Laborer'
         }`}
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
+              {formLoading
+                ? editId
+                  ? "Updating..."
+                  : "Creating..."
+                : editId
+                ? "Update"
+                : "Create"}
+            </Button>
+          </div>
+        }
       >
         <AtomicForm
           fields={
@@ -634,7 +658,7 @@ export default function ServicesPage() {
           onSubmit={handleSubmit}
           error={formError}
           loading={formLoading}
-          submitLabel={editId ? 'Update' : 'Create'}
+          submitLabel=""
         />
       </Drawer>
 

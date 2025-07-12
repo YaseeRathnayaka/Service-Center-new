@@ -218,7 +218,7 @@ export default function VehiclesPage() {
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
-          submitLabel={editId ? "Update" : "Add"}
+          submitLabel=""
         />
       </Drawer>
       <Dialog

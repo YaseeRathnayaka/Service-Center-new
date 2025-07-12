@@ -128,64 +128,13 @@ export default function Header() {
         {/* Settings */}
         <div className="relative">
           <button 
-            onClick={() => {
-              setShowSettings(!showSettings);
-              setShowNotifications(false);
-              setShowUserMenu(false);
-            }}
+            onClick={() => router.push('/settings')}
             className="p-2.5 rounded-xl bg-slate-800/50 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group"
+            aria-label="Settings"
           >
             <FaCog className="text-lg" />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           </button>
-
-          {/* Settings Dropdown */}
-          {showSettings && (
-            <div className="absolute top-full right-0 mt-2 w-64 bg-slate-800/95 backdrop-blur-sm rounded-xl border border-slate-600/50 shadow-2xl z-50">
-              <div className="p-4 border-b border-slate-600/50">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-white font-semibold">Settings</h3>
-                  <button 
-                    onClick={() => setShowSettings(false)}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    <FaTimes className="text-sm" />
-                  </button>
-                </div>
-              </div>
-              <div className="p-2">
-                <button 
-                  onClick={() => handleSettingsNavigation('/settings')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group"
-                >
-                  <FaUserCircle className="text-slate-400 group-hover:text-blue-400" />
-                  <span>Account Settings</span>
-                </button>
-                <button 
-                  onClick={() => handleSettingsNavigation('/settings')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group"
-                >
-                  <FaCog className="text-slate-400 group-hover:text-green-400" />
-                  <span>System Settings</span>
-                </button>
-                <button 
-                  onClick={() => handleSettingsNavigation('/settings')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group"
-                >
-                  <FaBell className="text-slate-400 group-hover:text-purple-400" />
-                  <span>Notification Settings</span>
-                </button>
-                <div className="border-t border-slate-600/50 my-2"></div>
-                <button 
-                  onClick={() => handleSettingsNavigation('/settings')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group"
-                >
-                  <FaCog className="text-slate-400 group-hover:text-orange-400" />
-                  <span>Preferences</span>
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* User Menu */}

@@ -278,11 +278,35 @@ export default function EmployeesPage() {
         title={
           editId ? "Edit Employee" : "Add Employee"
         }
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
+              {formLoading
+                ? editId
+                  ? "Updating..."
+                  : "Adding..."
+                : editId
+                ? "Update"
+                : "Add"}
+            </Button>
+          </div>
+        }
       >
         <AtomicForm
           fields={fields}
           onSubmit={handleSubmit}
-          submitLabel={editId ? "Update" : "Add"}
+          submitLabel=""
           loading={formLoading}
           error={formError}
         />

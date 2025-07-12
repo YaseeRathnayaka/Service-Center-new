@@ -175,8 +175,19 @@ export default function CustomersPage() {
         onClose={() => setDrawerOpen(false)}
         title={editId ? "Edit Customer" : "Add Customer"}
         footer={
-          <div className="flex justify-end gap-2">
-            <Button variant="primary" type="submit" disabled={formLoading}>
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
               {formLoading
                 ? editId
                   ? "Updating..."
@@ -193,7 +204,7 @@ export default function CustomersPage() {
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
-          submitLabel={editId ? "Update" : "Add"}
+          submitLabel=""
         />
       </Drawer>
       <Dialog

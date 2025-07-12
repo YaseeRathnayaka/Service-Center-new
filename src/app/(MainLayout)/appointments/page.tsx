@@ -266,8 +266,19 @@ export default function AppointmentsPage() {
         onClose={() => setDrawerOpen(false)}
         title={editId ? "Edit Appointment" : "Add Appointment"}
         footer={
-          <div className="flex justify-end gap-2">
-            <Button variant="primary" type="submit" disabled={formLoading}>
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
               {formLoading
                 ? editId
                   ? "Updating..."
@@ -284,8 +295,7 @@ export default function AppointmentsPage() {
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
-          submitLabel={editId ? "Update" : "Add"}
-          // Remove submit button from form
+          submitLabel=""
         />
       </Drawer>
       <Dialog
