@@ -116,44 +116,22 @@ export default function VehiclesPage() {
     {
       label: "Make",
       accessor: "make",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaCar className="text-blue-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
     {
       label: "Model",
       accessor: "model",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaCarSide className="text-green-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
     {
       label: "Year",
       accessor: "year",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaCalendarAlt className="text-purple-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
     {
       label: "Plate",
       accessor: "plate",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaIdCard className="text-orange-600" />
-          <span className="font-mono bg-gray-100 px-2 py-1 rounded">
-            {value}
-          </span>
-        </div>
-      ),
+      render: (value: string | undefined) => value ?? "",
     },
   ];
 
@@ -202,7 +180,7 @@ export default function VehiclesPage() {
           </h1>
         </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          <FaPlus className="mr-2" />+ Add Vehicle
+          Add Vehicle
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
@@ -220,16 +198,7 @@ export default function VehiclesPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={
-          <div className="flex items-center gap-2">
-            {editId ? (
-              <FaEdit className="text-blue-600" />
-            ) : (
-              <FaPlus className="text-blue-600" />
-            )}
-            {editId ? "Edit Vehicle" : "Add Vehicle"}
-          </div>
-        }
+        title={editId ? "Edit Vehicle" : "Add Vehicle"}
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="primary" type="submit" disabled={formLoading}>
@@ -259,12 +228,7 @@ export default function VehiclesPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title={
-          <div className="flex items-center gap-2">
-            <FaTrash className="text-red-600" />
-            Delete Vehicle
-          </div>
-        }
+        title="Delete Vehicle"
         message="Are you sure you want to delete this vehicle? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
