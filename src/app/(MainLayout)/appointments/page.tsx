@@ -6,15 +6,15 @@ import {
   updateAppointment,
   deleteAppointment,
   Appointment,
-} from "../../lib/api/appointments";
-import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
-import Button from "../../components/atoms/Button";
-import Table from "../../components/atoms/Table";
-import Drawer from "../../components/molecules/Drawer";
-import Dialog from "../../components/molecules/Dialog";
+} from "../../../lib/api/appointments";
+import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
+import Button from "../../../components/atoms/Button";
+import Table, { Column } from "../../../components/atoms/Table";
+import Drawer from "../../../components/molecules/Drawer";
+import Dialog from "../../../components/molecules/Dialog";
 import "remixicon/fonts/remixicon.css";
 import { toast } from "react-toastify";
-import LottieLoader from "../../components/atoms/LottieLoader";
+import LottieLoader from "../../../components/atoms/LottieLoader";
 
 const statusOptions = [
   { label: "Scheduled", value: "Scheduled" },
@@ -93,28 +93,25 @@ export default function AppointmentsPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || "Error saving appointment");
-      toast.error(err.message || "Error saving appointment");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || "Error saving appointment");
+      toast.error(error.message || "Error saving appointment");
     } finally {
       setFormLoading(false);
     }
   };
 
   // Delete
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
-
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
     try {
       await deleteAppointment(deleteId);
       toast.success("Appointment deleted");
-    } catch (err: any) {
-      toast.error(err.message || "Error deleting appointment");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Error deleting appointment");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -123,56 +120,43 @@ export default function AppointmentsPage() {
   };
 
   // Table columns
-  const columns = [
+  const columns: Column<Appointment>[] = [
     { label: "Customer", accessor: "customer" },
     { label: "Vehicle", accessor: "vehicle" },
     {
       label: "Date",
       accessor: "date",
-      render: (v: any) =>
-        v && v.toDate ? v.toDate().toISOString().slice(0, 10) : v,
+      render: (v: Appointment["date"] | undefined) =>
+        v && typeof v === "object" && "toDate" in v
+          ? v.toDate().toISOString().slice(0, 10)
+          : v,
     },
     {
       label: "Status",
       accessor: "status",
-      render: (v: string) => {
-        if (v === "Completed")
+      render: (v: string | import('firebase/firestore').Timestamp | undefined) => {
+        if (typeof v === 'string') {
+          if (v === "Completed")
+            return (
+              <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
+                Completed
+              </span>
+            );
+          if (v === "Pending")
+            return (
+              <span className="px-2 py-1 rounded bg-red-100 text-red-600 text-xs">
+                Pending
+              </span>
+            );
           return (
-            <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
-              Completed
+            <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
+              {v}
             </span>
           );
-        if (v === "Pending")
-          return (
-            <span className="px-2 py-1 rounded bg-red-100 text-red-600 text-xs">
-              Pending
-            </span>
-          );
-        return (
-          <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
-            {v}
-          </span>
-        );
+        }
+        // If v is a Timestamp or undefined, just render as string
+        return String(v ?? '');
       },
-    },
-    {
-      label: "Actions",
-      accessor: "actions",
-      render: (_: any, row: Appointment) => (
-        <div className="flex gap-2">
-          <Button iconOnly variant="secondary" aria-label="Edit appointment">
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button
-            iconOnly
-            variant="danger"
-            aria-label="Delete appointment"
-            onClick={() => handleDelete(row.id!)}
-          >
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      ),
     },
   ];
 
@@ -240,17 +224,15 @@ export default function AppointmentsPage() {
           <div className="flex justify-end gap-2">
             <Button
               variant="primary"
-              form="appointment-form"
               type="submit"
-              loading={formLoading}
+              disabled={formLoading}
             >
-              {editId ? "Update" : "Add"}
+              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
             </Button>
           </div>
         }
       >
         <AtomicForm
-          id="appointment-form"
           fields={fields}
           onSubmit={handleSubmit}
           loading={formLoading}

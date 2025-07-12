@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Table from "../../components/atoms/Table";
-import Button from "../../components/atoms/Button";
-import Drawer from "../../components/molecules/Drawer";
-import Dialog from "../../components/molecules/Dialog";
-import LottieLoader from "../../components/atoms/LottieLoader";
-import AtomicForm, { AtomicField } from "../../components/atoms/AtomicForm";
+import Table, { Column } from '../../../components/atoms/Table';
+import Button from '../../../components/atoms/Button';
+import Drawer from '../../../components/molecules/Drawer';
+import Dialog from '../../../components/molecules/Dialog';
+import LottieLoader from '../../../components/atoms/LottieLoader';
+import AtomicForm, { AtomicField } from '../../../components/atoms/AtomicForm';
 import { toast } from "react-toastify";
 import {
   getEmployees,
@@ -13,7 +13,7 @@ import {
   updateEmployee,
   deleteEmployee,
   Employee,
-} from "../../lib/api/employees";
+} from "../../../lib/api/employees";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -72,26 +72,24 @@ export default function EmployeesPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || "Error saving employee");
-      toast.error(err.message || "Error saving employee");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || "Error saving employee");
+      toast.error(error.message || "Error saving employee");
     } finally {
       setFormLoading(false);
     }
   };
 
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
     try {
       await deleteEmployee(deleteId);
       toast.success("Employee deleted");
-    } catch (err: any) {
-      toast.error(err.message || "Error deleting employee");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Error deleting employee");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -99,34 +97,10 @@ export default function EmployeesPage() {
     fetchData();
   };
 
-  const columns = [
+  const columns: Column<Employee>[] = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
     { label: "Role", accessor: "role" },
-    {
-      label: "Actions",
-      accessor: "actions",
-      render: (_: any, row: Employee) => (
-        <div className="flex gap-2">
-          <Button
-            iconOnly
-            variant="secondary"
-            aria-label="Edit employee"
-            onClick={() => openDrawer(row)}
-          >
-            <i className="ri-edit-2-line text-lg" />
-          </Button>
-          <Button
-            iconOnly
-            variant="danger"
-            aria-label="Delete employee"
-            onClick={() => handleDelete(row.id!)}
-          >
-            <i className="ri-delete-bin-6-line text-lg" />
-          </Button>
-        </div>
-      ),
-    },
   ];
 
   const fields: AtomicField[] = [
@@ -183,9 +157,9 @@ export default function EmployeesPage() {
         <AtomicForm
           fields={fields}
           onSubmit={handleSubmit}
-          submitLabel={editId ? "Update" : "Add"}
           loading={formLoading}
           error={formError}
+          submitLabel={editId ? "Update" : "Add"}
         />
       </Drawer>
       <Dialog
