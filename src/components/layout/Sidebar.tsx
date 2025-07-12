@@ -1,7 +1,9 @@
 "use client"
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getAuth, signOut } from 'firebase/auth';
+import { firebaseApp } from '../../firebaseConfig';
 import { 
   FaTachometerAlt, 
   FaCalendarAlt, 
@@ -14,7 +16,20 @@ import {
   FaChevronRight
 } from 'react-icons/fa';
 
-const sections = [
+interface NavigationItem {
+  name: string;
+  href: string | null;
+  icon: React.ReactElement;
+  description: string;
+  isLogout?: boolean;
+}
+
+interface Section {
+  label: string;
+  items: NavigationItem[];
+}
+
+const sections: Section[] = [
   {
     label: 'Overview',
     items: [
@@ -39,13 +54,14 @@ const sections = [
   {
     label: 'System',
     items: [
-      { name: 'Log Out', href: '/logout', icon: <FaSignOutAlt />, description: 'Sign out' },
+      { name: 'Log Out', href: null, icon: <FaSignOutAlt />, description: 'Sign out', isLogout: true },
     ],
   },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [expandedSections, setExpandedSections] = useState<string[]>(['Overview', 'Operations', 'People', 'System']);
 
   const toggleSection = (sectionLabel: string) => {
@@ -54,6 +70,17 @@ export default function Sidebar() {
         ? prev.filter(s => s !== sectionLabel)
         : [...prev, sectionLabel]
     );
+  };
+
+  const handleLogout = async () => {
+    try {
+      const auth = getAuth(firebaseApp);
+      await signOut(auth);
+      router.replace('/signin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      router.replace('/signin');
+    }
   };
 
   return (
@@ -88,7 +115,7 @@ export default function Sidebar() {
               className="w-full flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white transition-all duration-200 group"
             >
               <span className="text-xs font-semibold uppercase tracking-wider group-hover:text-blue-400 transition-colors">
-                {section.label}
+              {section.label}
               </span>
               <div className="transform transition-transform duration-200 group-hover:scale-110">
                 {expandedSections.includes(section.label) ? (
@@ -96,7 +123,7 @@ export default function Sidebar() {
                 ) : (
                   <FaChevronRight className="text-xs" />
                 )}
-              </div>
+            </div>
             </button>
 
             {/* Section Items */}
@@ -107,10 +134,38 @@ export default function Sidebar() {
             }`}>
               {section.items.map(item => {
                 const isActive = pathname === item.href;
+                
+                // Handle logout item differently
+                if (item.isLogout) {
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={handleLogout}
+                      className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02] hover:translate-x-1 w-full text-left text-slate-300 hover:text-white hover:bg-slate-700/50"
+                    >
+                      {/* Icon */}
+                      <div className="p-2 rounded-lg transition-all duration-200 bg-slate-700/50 text-slate-400 group-hover:bg-slate-600/50 group-hover:text-white">
+                        <span className="text-sm">{item.icon}</span>
+                      </div>
+                      
+                      {/* Text */}
+                      <div className="flex-1">
+                        <span className="text-sm font-medium">{item.name}</span>
+                        <p className="text-xs text-slate-500 group-hover:text-slate-300 transition-colors">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      {/* Hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    </button>
+                  );
+                }
+
                 return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
+                <Link
+                  key={item.name}
+                  href={item.href!}
                     className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02] hover:translate-x-1
                       ${isActive 
                         ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white shadow-lg border border-blue-500/30' 
@@ -141,7 +196,7 @@ export default function Sidebar() {
 
                     {/* Hover effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                  </Link>
+                </Link>
                 );
               })}
             </div>
