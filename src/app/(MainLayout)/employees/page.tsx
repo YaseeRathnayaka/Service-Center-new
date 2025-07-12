@@ -96,9 +96,10 @@ export default function EmployeesPage() {
       }
       setDrawerOpen(false);
       fetchData();
-    } catch (err: any) {
-      setFormError(err.message || "Error saving employee");
-      toast.error(err.message || "Error saving employee");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setFormError(error.message || "Error saving employee");
+      toast.error(error.message || "Error saving employee");
     } finally {
       setFormLoading(false);
     }
@@ -114,8 +115,9 @@ export default function EmployeesPage() {
     try {
       await deleteEmployee(deleteId);
       toast.success("Employee deleted");
-    } catch (err: any) {
-      toast.error(err.message || "Error deleting employee");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Error deleting employee");
     }
     setDeleteLoading(false);
     setConfirmOpen(false);
@@ -171,7 +173,7 @@ export default function EmployeesPage() {
     {
       label: "Actions",
       accessor: "actions",
-      render: (_: any, row: Employee) => (
+      render: (_: unknown, row: Employee) => (
         <div className="flex gap-2">
           <Button
             iconOnly
