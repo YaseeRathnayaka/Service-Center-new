@@ -65,14 +65,14 @@ const heatmapData = [
 export default function DashboardPage() {
   const [barHover, setBarHover] = useState(-1);
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <div className="max-w-7xl mx-auto px-4 py-8 bg-background">
+    <div className="min-h-screen font-sans">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* KPI Row */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           {kpis.map(m => (
             <div key={m.label} className="bg-white rounded-xl shadow-soft p-3 flex flex-col items-center gap-1 min-w-[110px]">
-              <div className="text-xl mb-1">{m.icon}</div>
-              <div className="text-base font-bold text-primary-700">{m.value}</div>
+              <div className="text-xl mb-1 text-slate-700">{m.icon}</div>
+              <div className="text-base font-bold text-primary-700 text-black">{m.value}</div>
               <div className="text-slate-500 text-[11px] tracking-wide uppercase">{m.label}</div>
             </div>
           ))}
@@ -81,7 +81,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {/* Sales/Finance Trend */}
           <div className="bg-white rounded-xl shadow-soft p-6">
-            <div className="font-semibold text-primary-700 mb-2">Sales & Revenue Trend</div>
+            <div className="font-semibold text-primary-700 mb-2 text-black">Sales & Revenue Trend</div>
             <ResponsiveContainer width="100%" height={180}>
               <AreaChart data={salesFinanceTrend} margin={{ left: -20, right: 10 }}>
                 <defs>
@@ -104,7 +104,7 @@ export default function DashboardPage() {
           </div>
           {/* Employee Management Bar */}
           <div className="bg-white rounded-xl shadow-soft p-6">
-            <div className="font-semibold text-primary-700 mb-2">Employee Management</div>
+            <div className="font-semibold text-primary-700 mb-2 text-black">Employee Management</div>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={employeeMgmt} margin={{ left: -20, right: 10 }}>
                 <XAxis dataKey="role" stroke="#a21caf" fontSize={12} />
@@ -120,7 +120,7 @@ export default function DashboardPage() {
           </div>
           {/* Vehicle Management Bar */}
           <div className="bg-white rounded-xl shadow-soft p-6">
-            <div className="font-semibold text-primary-700 mb-2">Vehicle Management</div>
+            <div className="font-semibold text-primary-700 mb-2 text-black">Vehicle Management</div>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={vehicleMgmt} margin={{ left: -20, right: 10 }}>
                 <XAxis dataKey="type" stroke="#a21caf" fontSize={12} />
@@ -137,20 +137,20 @@ export default function DashboardPage() {
         </div>
         {/* Heatmap for Vehicle Bottlenecks */}
         <div className="bg-white rounded-xl shadow-soft p-6 mb-8">
-          <div className="font-semibold text-primary-700 mb-2">Vehicle Bottleneck Heatmap</div>
+          <div className="font-semibold text-primary-700 mb-2 text-black">Vehicle Bottleneck Heatmap</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {heatmapData.map((item) => (
-              <div key={item.area} className="flex flex-col items-center justify-center p-4 rounded-lg" style={{ background: `rgba(174,62,201,${0.08 + 0.08 * item.stuck})` }}>
-                <div className="text-[13px] font-semibold text-primary-700 mb-1">{item.area}</div>
-                <div className="text-2xl font-bold text-accent-700">{item.stuck}</div>
-                <div className="text-xs text-slate-500">vehicles stuck</div>
+              <div key={item.area} className="flex flex-col items-center justify-center p-4 rounded-lg bg-blue-100">
+                <div className="text-[13px] font-semibold text-primary-700 mb-1 text-black">{item.area}</div>
+                <div className="text-2xl font-bold text-accent-700 text-black">{item.stuck}</div>
+                <div className="text-xs text-slate-500 text-black">vehicles stuck</div>
               </div>
             ))}
           </div>
         </div>
         {/* Recent Activity Table */}
         <div className="bg-white rounded-xl shadow-soft p-6 mb-8">
-          <div className="font-semibold text-primary-700 mb-2">Recent Activity</div>
+          <div className="font-semibold text-primary-700 mb-2 text-black">Recent Activity</div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-xs">
               <thead>
@@ -166,10 +166,10 @@ export default function DashboardPage() {
                 {recentActivity.map((a) => (
                   <tr key={a.date + a.type} className="border-b border-slate-100">
                     <td className="py-2 px-3 font-medium text-slate-700">{a.type}</td>
-                    <td className="py-2 px-3">{a.desc}</td>
-                    <td className="py-2 px-3">{a.amount}</td>
-                    <td className="py-2 px-3">{a.date}</td>
-                    <td className="py-2 px-3">
+                    <td className="py-2 px-3 text-black">{a.desc}</td>
+                    <td className="py-2 px-3 text-black">{a.amount}</td>
+                    <td className="py-2 px-3 text-black">{a.date}</td>
+                    <td className="py-2 px-3 text-black">
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${a.status === 'Paid' || a.status === 'Completed' ? 'bg-teal-100 text-teal-700' : a.status === 'Pending' ? 'bg-primary-100 text-primary-700' : 'bg-accent-100 text-accent-700'}`}>{a.status}</span>
                     </td>
                   </tr>

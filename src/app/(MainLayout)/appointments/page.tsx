@@ -1,6 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
+  FaCalendarAlt,
+  FaCalendarPlus,
+  FaEdit,
+  FaTrash,
+  FaUser,
+  FaCar,
+  FaClock,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaHourglassHalf,
+} from "react-icons/fa";
+import {
   getAppointments,
   addAppointment,
   updateAppointment,
@@ -121,41 +133,84 @@ export default function AppointmentsPage() {
 
   // Table columns
   const columns: Column<Appointment>[] = [
-    { label: "Customer", accessor: "customer" },
-    { label: "Vehicle", accessor: "vehicle" },
+    {
+      label: "Customer",
+      accessor: "customer",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaUser className="text-blue-600" />
+          <span>{value}</span>
+        </div>
+      ),
+    },
+    {
+      label: "Vehicle",
+      accessor: "vehicle",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaCar className="text-green-600" />
+          <span>{value}</span>
+        </div>
+      ),
+    },
     {
       label: "Date",
       accessor: "date",
-      render: (v: Appointment["date"] | undefined) =>
-        v && typeof v === "object" && "toDate" in v
-          ? v.toDate().toISOString().slice(0, 10)
-          : v,
+      render: (v: Appointment["date"] | undefined) => (
+        <div className="flex items-center gap-2">
+          <FaCalendarAlt className="text-purple-600" />
+          <span>
+            {v && typeof v === "object" && "toDate" in v
+              ? v.toDate().toISOString().slice(0, 10)
+              : v}
+          </span>
+        </div>
+      ),
     },
     {
       label: "Status",
       accessor: "status",
-      render: (v: string | import('firebase/firestore').Timestamp | undefined) => {
-        if (typeof v === 'string') {
-          if (v === "Completed")
-            return (
-              <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
-                Completed
-              </span>
-            );
-          if (v === "Pending")
-            return (
-              <span className="px-2 py-1 rounded bg-red-100 text-red-600 text-xs">
-                Pending
-              </span>
-            );
+      render: (
+        v: string | import("firebase/firestore").Timestamp | undefined
+      ) => {
+        if (typeof v === "string") {
+          let icon, bgColor, textColor;
+
+          if (v === "Completed") {
+            icon = <FaCheckCircle className="text-green-600" />;
+            bgColor = "bg-green-100";
+            textColor = "text-green-700";
+          } else if (v === "Scheduled") {
+            icon = <FaClock className="text-blue-600" />;
+            bgColor = "bg-blue-100";
+            textColor = "text-blue-700";
+          } else if (v === "In Progress") {
+            icon = <FaHourglassHalf className="text-orange-600" />;
+            bgColor = "bg-orange-100";
+            textColor = "text-orange-700";
+          } else if (v === "Cancelled") {
+            icon = <FaTimesCircle className="text-red-600" />;
+            bgColor = "bg-red-100";
+            textColor = "text-red-700";
+          } else {
+            icon = <FaClock className="text-gray-600" />;
+            bgColor = "bg-gray-100";
+            textColor = "text-gray-700";
+          }
+
           return (
-            <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
-              {v}
-            </span>
+            <div className="flex items-center gap-2">
+              {icon}
+              <span
+                className={`px-2 py-1 rounded text-xs font-semibold ${bgColor} ${textColor}`}
+              >
+                {v}
+              </span>
+            </div>
           );
         }
         // If v is a Timestamp or undefined, just render as string
-        return String(v ?? '');
+        return String(v ?? "");
       },
     },
   ];
@@ -200,15 +255,21 @@ export default function AppointmentsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-900">
-          Appointment Management
-        </h1>
+        <div className="flex items-center gap-3">
+          <FaCalendarAlt className="text-3xl text-blue-600" />
+          <h1 className="text-2xl font-bold text-blue-900">
+            Appointment Management
+          </h1>
+        </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          + Add Appointment
+          <FaCalendarPlus className="mr-2" />+ Add Appointment
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
-        <h2 className="font-semibold mb-2 text-blue-900">All Appointments</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <FaCalendarAlt className="text-xl text-blue-600" />
+          <h2 className="font-semibold text-blue-900">All Appointments</h2>
+        </div>
         <Table columns={columns} data={appointments} />
         {(loading || formLoading || deleteLoading) && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 rounded-xl">
@@ -219,15 +280,26 @@ export default function AppointmentsPage() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={editId ? (editId ? "Edit Appointment" : "Add Appointment") : "Add Appointment"}
+        title={
+          <div className="flex items-center gap-2">
+            {editId ? (
+              <FaEdit className="text-blue-600" />
+            ) : (
+              <FaCalendarPlus className="text-blue-600" />
+            )}
+            {editId ? "Edit Appointment" : "Add Appointment"}
+          </div>
+        }
         footer={
           <div className="flex justify-end gap-2">
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={formLoading}
-            >
-              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
+            <Button variant="primary" type="submit" disabled={formLoading}>
+              {formLoading
+                ? editId
+                  ? "Updating..."
+                  : "Adding..."
+                : editId
+                ? "Update"
+                : "Add"}
             </Button>
           </div>
         }
@@ -248,7 +320,12 @@ export default function AppointmentsPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Appointment"
+        title={
+          <div className="flex items-center gap-2">
+            <FaTrash className="text-red-600" />
+            Delete Appointment
+          </div>
+        }
         message="Are you sure you want to delete this appointment? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
