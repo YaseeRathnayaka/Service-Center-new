@@ -9,8 +9,7 @@ Fixes # (issue)
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
-- [ ] Documentation update
-- [ ] Other (please describe):
+- [ ] Documentation update:
 
 ## Changes
 - 
