@@ -64,6 +64,7 @@ export default function ServicesPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [modalData, setModalData] = useState<any>(null);
 
   const fetchData = async () => {
@@ -79,7 +80,7 @@ export default function ServicesPage() {
       setServiceHeads(headsData);
       setServiceLaborers(laborersData);
       setEmployees(employeesData);
-    } catch (error) {
+    } catch {
       toast.error("Error fetching data");
     }
     setLoading(false);
