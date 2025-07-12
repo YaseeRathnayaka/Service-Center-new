@@ -1,5 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import {
+  FaCar,
+  FaCarSide,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaCog,
+  FaCalendarAlt,
+  FaIdCard,
+} from "react-icons/fa";
 import Table, { Column } from "../../../components/atoms/Table";
 import Button from "../../../components/atoms/Button";
 import Drawer from "../../../components/molecules/Drawer";
@@ -59,7 +69,8 @@ export default function VehiclesPage() {
   };
 
   const handleField =
-    (name: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    (name: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setForm((f) => ({ ...f, [name]: e.target.value }));
     };
 
@@ -103,10 +114,48 @@ export default function VehiclesPage() {
   };
 
   const columns: Column<Vehicle>[] = [
-    { label: "Make", accessor: "make" },
-    { label: "Model", accessor: "model" },
-    { label: "Year", accessor: "year" },
-    { label: "Plate", accessor: "plate" },
+    {
+      label: "Make",
+      accessor: "make",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaCar className="text-blue-600" />
+          <span>{value}</span>
+        </div>
+      ),
+    },
+    {
+      label: "Model",
+      accessor: "model",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaCarSide className="text-green-600" />
+          <span>{value}</span>
+        </div>
+      ),
+    },
+    {
+      label: "Year",
+      accessor: "year",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaCalendarAlt className="text-purple-600" />
+          <span>{value}</span>
+        </div>
+      ),
+    },
+    {
+      label: "Plate",
+      accessor: "plate",
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FaIdCard className="text-orange-600" />
+          <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+            {value}
+          </span>
+        </div>
+      ),
+    },
   ];
 
   const fields: AtomicField[] = [
@@ -147,13 +196,21 @@ export default function VehiclesPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-900">Vehicle Management</h1>
+        <div className="flex items-center gap-3">
+          <FaCar className="text-3xl text-blue-600" />
+          <h1 className="text-2xl font-bold text-blue-900">
+            Vehicle Management
+          </h1>
+        </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          + Add Vehicle
+          <FaPlus className="mr-2" />+ Add Vehicle
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
-        <h2 className="font-semibold mb-2 text-blue-900">All Vehicles</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <FaCarSide className="text-xl text-blue-600" />
+          <h2 className="font-semibold text-blue-900">All Vehicles</h2>
+        </div>
         <Table columns={columns} data={vehicles} />
         {(loading || formLoading || deleteLoading) && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 rounded-xl">
@@ -165,16 +222,25 @@ export default function VehiclesPage() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title={
-          editId ? (editId ? "Edit Vehicle" : "Add Vehicle") : "Add Vehicle"
+          <div className="flex items-center gap-2">
+            {editId ? (
+              <FaEdit className="text-blue-600" />
+            ) : (
+              <FaPlus className="text-blue-600" />
+            )}
+            {editId ? "Edit Vehicle" : "Add Vehicle"}
+          </div>
         }
         footer={
           <div className="flex justify-end gap-2">
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={formLoading}
-            >
-              {formLoading ? (editId ? "Updating..." : "Adding...") : (editId ? "Update" : "Add")}
+            <Button variant="primary" type="submit" disabled={formLoading}>
+              {formLoading
+                ? editId
+                  ? "Updating..."
+                  : "Adding..."
+                : editId
+                ? "Update"
+                : "Add"}
             </Button>
           </div>
         }
@@ -194,7 +260,12 @@ export default function VehiclesPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Vehicle"
+        title={
+          <div className="flex items-center gap-2">
+            <FaTrash className="text-red-600" />
+            Delete Vehicle
+          </div>
+        }
         message="Are you sure you want to delete this vehicle? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"

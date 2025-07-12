@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import Button from '../atoms/Button';
-import LottieLoader from '../atoms/LottieLoader';
+import React, { useEffect, useRef } from "react";
+import Button from "../atoms/Button";
+import LottieLoader from "../atoms/LottieLoader";
 
 interface DialogProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
   title?: string;
-  message?: string;
+  message?: React.ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   loading?: boolean;
@@ -20,8 +20,8 @@ export default function Dialog({
   onConfirm,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   loading,
   children,
 }: DialogProps) {
@@ -38,10 +38,10 @@ export default function Dialog({
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
   if (!open) return null;
@@ -55,7 +55,14 @@ export default function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
       >
-        {title && <div id="dialog-title" className="font-bold text-lg text-blue-900 mb-2">{title}</div>}
+        {title && (
+          <div
+            id="dialog-title"
+            className="font-bold text-lg text-blue-900 mb-2"
+          >
+            {title}
+          </div>
+        )}
         {message && <div className="text-gray-800 mb-4">{message}</div>}
         {children}
         {loading && (
@@ -64,10 +71,14 @@ export default function Dialog({
           </div>
         )}
         <div className="flex justify-end gap-2 mt-6">
-          <Button onClick={onClose} variant="secondary" disabled={loading}>{cancelLabel}</Button>
-          <Button onClick={onConfirm} variant="danger" disabled={loading}>{confirmLabel}</Button>
+          <Button onClick={onClose} variant="secondary" disabled={loading}>
+            {cancelLabel}
+          </Button>
+          <Button onClick={onConfirm} variant="danger" disabled={loading}>
+            {confirmLabel}
+          </Button>
         </div>
       </div>
     </div>
   );
-} 
+}

@@ -5,11 +5,24 @@ import { getAuth, updateProfile, updatePassword } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseApp } from "../../../firebaseConfig";
 import Button from "../../../components/atoms/Button";
-import { FaPencilAlt } from "react-icons/fa";
-import Image from 'next/image';
+import {
+  FaPencilAlt,
+  FaCog,
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaCamera,
+  FaSave,
+  FaTimes,
+  FaCheck,
+  FaExclamationTriangle,
+} from "react-icons/fa";
+import Image from "next/image";
 
 export default function SettingsPage() {
-  const [user, setUser] = useState<ReturnType<typeof getAuth>["currentUser"] | null>(null);
+  const [user, setUser] = useState<
+    ReturnType<typeof getAuth>["currentUser"] | null
+  >(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [photoURL, setPhotoURL] = useState("");
@@ -17,7 +30,9 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(null);
+  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -93,20 +108,29 @@ export default function SettingsPage() {
 
   return (
     <div className=" bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <FaCog className="text-3xl text-blue-600" />
+        <h1 className="text-2xl font-bold">Settings</h1>
+      </div>
       {/* Profile Picture Row */}
       <div className="flex items-center justify-between border-b py-4">
         <div className="flex items-center gap-4">
-          <Image
-            src={photoURL || "/default-profile.png"}
-            alt="Profile"
-            width={64}
-            height={64}
-            className="w-16 h-16 rounded-full object-cover border"
-          />
-          <span className="font-medium text-lg text-black">
-            Profile Picture
-          </span>
+          <div className="relative">
+            <Image
+              src={photoURL || "/default-profile.png"}
+              alt="Profile"
+              width={64}
+              height={64}
+              className="w-16 h-16 rounded-full object-cover border"
+            />
+            <FaCamera className="absolute -bottom-1 -right-1 text-blue-600 bg-white rounded-full p-1" />
+          </div>
+          <div className="flex items-center gap-2">
+            <FaUser className="text-blue-600" />
+            <span className="font-medium text-lg text-black">
+              Profile Picture
+            </span>
+          </div>
         </div>
         {editing === "photo" ? (
           <div className="flex gap-2">
@@ -116,6 +140,7 @@ export default function SettingsPage() {
               onClick={() => setEditing(null)}
               disabled={loading}
             >
+              <FaTimes className="mr-1" />
               Cancel
             </Button>
           </div>
@@ -145,9 +170,12 @@ export default function SettingsPage() {
       )}
       {/* Name Row */}
       <div className="flex items-center justify-between border-b py-4">
-        <div>
-          <div className="font-medium text-lg text-black">Name</div>
-          <div>{user?.displayName || "-"}</div>
+        <div className="flex items-center gap-3">
+          <FaUser className="text-blue-600" />
+          <div>
+            <div className="font-medium text-lg text-black">Name</div>
+            <div>{user?.displayName || "-"}</div>
+          </div>
         </div>
         {editing === "name" ? null : (
           <button
@@ -172,6 +200,7 @@ export default function SettingsPage() {
           />
           <div className="flex gap-2 justify-end">
             <Button type="submit" className="px-3 py-1">
+              <FaSave className="mr-1" />
               Save
             </Button>
             <Button
@@ -180,6 +209,7 @@ export default function SettingsPage() {
               variant="secondary"
               onClick={() => setEditing(null)}
             >
+              <FaTimes className="mr-1" />
               Cancel
             </Button>
           </div>
@@ -187,15 +217,21 @@ export default function SettingsPage() {
       )}
       {/* Email Row (not editable) */}
       <div className="flex items-center justify-between border-b py-4">
-        <div>
-          <div className="font-medium text-lg text-black">Email</div>
-          <div className="text-gray-700">{email}</div>
+        <div className="flex items-center gap-3">
+          <FaEnvelope className="text-green-600" />
+          <div>
+            <div className="font-medium text-lg text-black">Email</div>
+            <div className="text-gray-700">{email}</div>
+          </div>
         </div>
       </div>
       {/* Password Row */}
       <div className="flex items-center justify-between border-b py-4">
-        <div>
-          <div className="font-medium text-lg text-black">Password</div>
+        <div className="flex items-center gap-3">
+          <FaLock className="text-purple-600" />
+          <div>
+            <div className="font-medium text-lg text-black">Password</div>
+          </div>
         </div>
         {editing === "password" ? null : (
           <button
@@ -221,6 +257,7 @@ export default function SettingsPage() {
           />
           <div className="flex gap-2 justify-end">
             <Button type="submit" className="px-3 py-1">
+              <FaSave className="mr-1" />
               Save
             </Button>
             <Button
@@ -229,14 +266,25 @@ export default function SettingsPage() {
               variant="secondary"
               onClick={() => setEditing(null)}
             >
+              <FaTimes className="mr-1" />
               Cancel
             </Button>
           </div>
         </form>
       )}
       {/* Messages */}
-      {message && <div className="text-green-600 mb-2 mt-4">{message}</div>}
-      {error && <div className="text-red-600 mb-2 mt-4">{error}</div>}
+      {message && (
+        <div className="flex items-center gap-2 text-green-600 mb-2 mt-4">
+          <FaCheck />
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="flex items-center gap-2 text-red-600 mb-2 mt-4">
+          <FaExclamationTriangle />
+          {error}
+        </div>
+      )}
     </div>
   );
 }
