@@ -1,7 +1,7 @@
 "use client"
 import { FaDollarSign, FaChartLine, FaCarSide, FaFileInvoiceDollar, FaMoneyBillWave, FaUserTie, FaArrowUp, FaUsers, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, LineChart, Line
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie
 } from 'recharts';
 import { useState, useEffect } from 'react';
 
@@ -142,6 +142,16 @@ const recentActivity = [
   },
 ];
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  label?: string;
+}
+
 export default function DashboardPage() {
   const [animateCards, setAnimateCards] = useState(false);
   const [barHover, setBarHover] = useState(-1);
@@ -150,12 +160,12 @@ export default function DashboardPage() {
     setAnimateCards(true);
   }, []);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
           <p className="font-semibold text-gray-900">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index) => (
             <p key={index} style={{ color: entry.color }} className="text-sm">
               {entry.name}: ${entry.value.toLocaleString()}
             </p>
@@ -172,7 +182,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's what's happening with your service center.</p>
+          <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your service center.</p>
         </div>
 
         {/* KPI Cards */}
@@ -276,7 +286,7 @@ export default function DashboardPage() {
               </PieChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 gap-4 mt-4">
-              {employeeData.map((item, index) => (
+              {employeeData.map((item) => (
                 <div key={item.name} className="flex items-center">
                   <div 
                     className="w-3 h-3 rounded-full mr-2" 
@@ -301,7 +311,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="space-y-4">
-              {servicePerformance.map((service, index) => (
+              {servicePerformance.map((service) => (
                 <div key={service.service} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center">
                     <div 
@@ -370,9 +380,9 @@ export default function DashboardPage() {
             <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">View All</button>
           </div>
           <div className="space-y-4">
-            {recentActivity.map((activity, index) => (
+            {recentActivity.map((activity) => (
               <div 
-                key={index}
+                key={activity.date + activity.type}
                 className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 hover:shadow-md ${
                   activity.color
                 }`}
