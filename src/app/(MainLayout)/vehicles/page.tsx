@@ -3,11 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   FaCar,
   FaCarSide,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaCalendarAlt,
-  FaIdCard,
 } from "react-icons/fa";
 import Table, { Column } from "../../../components/atoms/Table";
 import Button from "../../../components/atoms/Button";
