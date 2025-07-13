@@ -1,9 +1,11 @@
 "use client"
-import { FaDollarSign, FaChartLine, FaCarSide, FaFileInvoiceDollar, FaMoneyBillWave, FaUserTie, FaArrowUp, FaUsers, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaDollarSign, FaChartLine, FaCarSide, FaFileInvoiceDollar, FaMoneyBillWave, FaUserTie, FaArrowUp, FaUsers, FaCalendarAlt, FaClock, FaHourglassHalf, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie
 } from 'recharts';
 import { useState, useEffect } from 'react';
+import { getAppointments, Appointment } from '../../../lib/api/appointments';
+import { Timestamp } from 'firebase/firestore';
 
 // KPI data with enhanced metrics
 const kpis = [
@@ -155,9 +157,32 @@ interface TooltipProps {
 export default function DashboardPage() {
   const [animateCards, setAnimateCards] = useState(false);
   const [barHover, setBarHover] = useState(-1);
+  const [todayStatus, setTodayStatus] = useState<{ [status: string]: number }>({});
+  const [loadingToday, setLoadingToday] = useState(true);
 
   useEffect(() => {
     setAnimateCards(true);
+    // Fetch today's appointments
+    (async () => {
+      setLoadingToday(true);
+      const appts = await getAppointments();
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+      const statusCount: { [status: string]: number } = {};
+      appts.forEach((appt: Appointment) => {
+        let apptDate: string;
+        if (typeof appt.date === 'object' && 'toDate' in appt.date) {
+          apptDate = appt.date.toDate().toISOString().slice(0, 10);
+        } else {
+          apptDate = String(appt.date).slice(0, 10);
+        }
+        if (apptDate === todayStr) {
+          statusCount[appt.status] = (statusCount[appt.status] || 0) + 1;
+        }
+      });
+      setTodayStatus(statusCount);
+      setLoadingToday(false);
+    })();
   }, []);
 
   const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
@@ -183,6 +208,39 @@ export default function DashboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
           <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your service center.</p>
+        </div>
+
+        {/* Today's Appointments by Status */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <FaCalendarAlt className="text-blue-500" /> Today's Appointments by Status
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {loadingToday ? (
+              <div className="col-span-6 flex justify-center items-center py-8">
+                <span className="text-gray-500">Loading...</span>
+              </div>
+            ) : (
+              [
+                { label: 'Scheduled', icon: <FaClock className="text-blue-600 text-lg" />, color: 'from-blue-400 to-blue-600' },
+                { label: 'In Progress', icon: <FaHourglassHalf className="text-orange-600 text-lg" />, color: 'from-orange-400 to-orange-600' },
+                { label: 'Completed', icon: <FaCheckCircle className="text-green-600 text-lg" />, color: 'from-green-400 to-green-600' },
+                { label: 'Cancelled', icon: <FaTimesCircle className="text-red-600 text-lg" />, color: 'from-red-400 to-red-600' },
+              ].map((status, idx) => (
+                <div
+                  key={status.label}
+                  className={`rounded-2xl shadow-lg border border-gray-100 p-4 flex flex-col items-center bg-gradient-to-r ${status.color} text-white transition-all duration-700 ${animateCards ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+                  style={{ transitionDelay: `${idx * 80}ms` }}
+                >
+                  <div className="w-10 h-10 flex items-center justify-center mb-2">
+                    {status.icon}
+                  </div>
+                  <div className="text-2xl font-bold">{todayStatus[status.label] || 0}</div>
+                  <div className="text-sm font-medium">{status.label}</div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* KPI Cards */}

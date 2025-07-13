@@ -14,6 +14,7 @@ import {
   deleteAppointment,
   Appointment,
 } from "../../../lib/api/appointments";
+import { getVehicles, addVehicle, Vehicle } from '../../../lib/api/vehicles';
 import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
 import Button from "../../../components/atoms/Button";
 import Table, { Column } from "../../../components/atoms/Table";
@@ -91,6 +92,13 @@ export default function AppointmentsPage() {
     setFormLoading(true);
     setFormError("");
     try {
+      // Check if vehicle exists by plate
+      const vehicles = await getVehicles();
+      const existingVehicle = vehicles.find(v => v.plate === form.vehicle);
+      if (!existingVehicle) {
+        // If not, add vehicle with minimal info
+        await addVehicle({ make: '', model: '', year: '', plate: form.vehicle });
+      }
       if (editId) {
         await updateAppointment(editId, form);
         toast.success("Appointment updated successfully");
@@ -156,7 +164,8 @@ export default function AppointmentsPage() {
       label: "Status",
       accessor: "status",
       render: (
-        v: string | import("firebase/firestore").Timestamp | undefined
+        v: string | import("firebase/firestore").Timestamp | undefined,
+        row: Appointment
       ) => {
         if (typeof v === "string") {
           let icon, bgColor, textColor;
@@ -191,6 +200,31 @@ export default function AppointmentsPage() {
               >
                 {v}
               </span>
+              <select
+                className="ml-2 border rounded px-2 py-1 text-xs"
+                value={v}
+                onChange={async (e) => {
+                  const newStatus = e.target.value;
+                  try {
+                    await updateAppointment(row.id!, { status: newStatus });
+                    setAppointments((prev) =>
+                      prev.map((appt) =>
+                        appt.id === row.id ? { ...appt, status: newStatus } : appt
+                      )
+                    );
+                    toast.success("Status updated");
+                  } catch (err: unknown) {
+                    const error = err as Error;
+                    toast.error(error.message || "Error updating status");
+                  }
+                }}
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           );
         }
