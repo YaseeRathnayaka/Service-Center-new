@@ -9,10 +9,6 @@ import {
   FaArrowUp,
   FaUsers,
   FaCalendarAlt,
-  FaClock,
-  FaHourglassHalf,
-  FaCheckCircle,
-  FaTimesCircle,
 } from "react-icons/fa";
 import {
   AreaChart,
@@ -28,7 +24,6 @@ import {
   Pie,
 } from "recharts";
 import { useState, useEffect } from "react";
-import { getAppointments, Appointment } from "../../../lib/api/appointments";
 
 // KPI data with enhanced metrics
 const kpis = [
@@ -84,13 +79,13 @@ const kpis = [
 
 // Enhanced sales trend data
 const salesTrend = [
-  { month: "Jan", sales: 12000, revenue: 18000, profit: 5400 },
-  { month: "Feb", sales: 14500, revenue: 21000, profit: 6300 },
-  { month: "Mar", sales: 17000, revenue: 25000, profit: 7500 },
-  { month: "Apr", sales: 15500, revenue: 23000, profit: 6900 },
-  { month: "May", sales: 21000, revenue: 32000, profit: 9600 },
-  { month: "Jun", sales: 18500, revenue: 27000, profit: 8100 },
-  { month: "Jul", sales: 22000, revenue: 35000, profit: 10500 },
+  { month: "Jan", revenue: 18000, profit: 5400 },
+  { month: "Feb", revenue: 21000, profit: 6300 },
+  { month: "Mar", revenue: 25000, profit: 7500 },
+  { month: "Apr", revenue: 23000, profit: 6900 },
+  { month: "May", revenue: 32000, profit: 9600 },
+  { month: "Jun", revenue: 27000, profit: 8100 },
+  { month: "Jul", revenue: 35000, profit: 10500 },
 ];
 
 // Employee distribution data
@@ -180,34 +175,9 @@ interface TooltipProps {
 export default function DashboardPage() {
   const [animateCards, setAnimateCards] = useState(false);
   const [barHover, setBarHover] = useState(-1);
-  const [todayStatus, setTodayStatus] = useState<{ [status: string]: number }>(
-    {}
-  );
-  const [loadingToday, setLoadingToday] = useState(true);
 
   useEffect(() => {
     setAnimateCards(true);
-    // Fetch today's appointments
-    (async () => {
-      setLoadingToday(true);
-      const appts = await getAppointments();
-      const today = new Date();
-      const todayStr = today.toISOString().slice(0, 10);
-      const statusCount: { [status: string]: number } = {};
-      appts.forEach((appt: Appointment) => {
-        let apptDate: string;
-        if (typeof appt.date === "object" && "toDate" in appt.date) {
-          apptDate = appt.date.toDate().toISOString().slice(0, 10);
-        } else {
-          apptDate = String(appt.date).slice(0, 10);
-        }
-        if (apptDate === todayStr) {
-          statusCount[appt.status] = (statusCount[appt.status] || 0) + 1;
-        }
-      });
-      setTodayStatus(statusCount);
-      setLoadingToday(false);
-    })();
   }, []);
 
   const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
@@ -394,7 +364,7 @@ export default function DashboardPage() {
                 Service Performance
               </h3>
               <div className="flex items-center text-sm text-gray-600">
-                <FaClock className="mr-2" />
+                <FaCalendarAlt className="mr-2" />
                 Efficiency %
               </div>
             </div>
