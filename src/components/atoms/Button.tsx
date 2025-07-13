@@ -17,12 +17,17 @@ interface ButtonProps {
   'aria-label'?: string;
 }
 
-const base = 'px-4 py-2 rounded font-medium focus:outline-none transition';
-const iconBase = 'w-9 h-9 flex items-center justify-center rounded focus:outline-none transition';
+const base = 'px-4 py-2 font-semibold focus:outline-none transition-all duration-200 border shadow-sm text-sm select-none rounded-md';
+const iconBase = 'w-9 h-9 flex items-center justify-center focus:outline-none transition-all duration-200 border shadow-sm select-none rounded-md';
 const variants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondary: 'bg-gray-100 text-blue-900 hover:bg-gray-200',
-  danger: 'bg-red-500 text-white hover:bg-red-600',
+  primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-600 hover:from-blue-700 hover:to-purple-700 hover:shadow-lg active:scale-95',
+  secondary: 'bg-slate-100 text-blue-900 border-slate-200 hover:bg-slate-200 hover:text-blue-700 hover:shadow-md active:scale-95',
+  danger: 'bg-gradient-to-r from-red-500 to-pink-500 text-white border-red-500 hover:from-red-600 hover:to-pink-600 hover:shadow-lg active:scale-95',
+};
+const iconVariants = {
+  primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-600 hover:from-blue-700 hover:to-purple-700 hover:shadow-lg active:scale-95',
+  secondary: 'bg-slate-100 text-blue-900 border-slate-200 hover:bg-slate-200 hover:text-blue-700 hover:shadow-md active:scale-95',
+  danger: 'bg-gradient-to-r from-red-500 to-pink-500 text-white border-red-500 hover:from-red-600 hover:to-pink-600 hover:shadow-lg active:scale-95',
 };
 
 export default function Button({ children, onClick, type = 'button', disabled, className, variant = 'primary', iconOnly, 'aria-label': ariaLabel }: ButtonProps) {
@@ -35,7 +40,12 @@ export default function Button({ children, onClick, type = 'button', disabled, c
       onClick={onClick}
       disabled={disabled}
       aria-label={iconOnly ? ariaLabel : undefined}
-      className={`${iconOnly ? iconBase : base} ${variants[variant]} ${className || ''} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+      className={
+        `${iconOnly
+          ? `${iconBase} ${iconVariants[variant]}`
+          : `${base} ${variants[variant]}`
+        } ${className || ''} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`
+      }
     >
       {children}
     </button>

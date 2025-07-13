@@ -31,7 +31,21 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1 overflow-auto p-6 bg-gray-50">{children}</main>
       </div>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover theme="colored" />
+      <ToastContainer 
+        position="top-right" 
+        autoClose={4000} 
+        hideProgressBar={false} 
+        newestOnTop 
+        closeOnClick 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+        theme="dark"
+        className="custom-toast-container"
+        style={{
+          zIndex: 9999,
+        }}
+      />
     </div>
   );
 }

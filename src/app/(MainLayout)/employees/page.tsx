@@ -1,8 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { 
-  FaUsers, FaUserPlus, FaEdit, FaTrash, FaDownload, FaEllipsisV, 
-  FaUser, FaEnvelope, FaUserTie, FaPhone, FaTools, FaMapMarkerAlt 
+  FaUsers, 
+  FaUser, 
+  FaEnvelope, 
+  FaUserTie, 
+  FaPhone, 
+  FaTools, 
+  FaMapMarkerAlt 
 } from "react-icons/fa";
 import Table from "../../../components/atoms/Table";
 import Button from "../../../components/atoms/Button";
@@ -142,73 +147,50 @@ export default function EmployeesPage() {
   const columns = [
     { 
       label: "Name", 
-      accessor: "name",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaUser className="text-blue-600" />
-          <span>{value}</span>
-        </div>
-      )
+      accessor: "name" as keyof Employee,
+      render: (value: string | undefined) => value ?? ""
     },
     { 
       label: "Email", 
-      accessor: "email",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaEnvelope className="text-green-600" />
-          <span>{value}</span>
-        </div>
-      )
+      accessor: "email" as keyof Employee,
+      render: (value: string | undefined) => value ?? ""
     },
     { 
       label: "Role", 
-      accessor: "role",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaUserTie className="text-purple-600" />
-          <span>{value}</span>
-        </div>
-      )
+      accessor: "role" as keyof Employee,
+      render: (value: string | undefined) => value ?? ""
     },
     {
       label: "Actions",
-      accessor: "actions",
+      accessor: "actions" as keyof Employee,
       render: (_: unknown, row: Employee) => (
         <div className="flex gap-2">
           <Button
-            iconOnly
             variant="secondary"
-            aria-label="Edit employee"
             onClick={() => openDrawer(row)}
           >
-            <FaEdit className="text-lg" />
+            Edit
           </Button>
           <Button
-            iconOnly
             variant="danger"
-            aria-label="Delete employee"
             onClick={() => handleDelete(row.id!)}
           >
-            <FaTrash className="text-sm" />
+            Delete
           </Button>
           <Button
-            iconOnly
             variant="primary"
-            aria-label="Download employee as PDF"
             onClick={() => handleDownloadPDF(row)}
           >
-            <FaDownload className="text-sm" />
+            Download
           </Button>
           <Button
-            iconOnly
             variant="secondary"
-            aria-label="More details"
             onClick={() => {
               setModalEmployee(row);
               setModalOpen(true);
             }}
           >
-            <FaEllipsisV />
+            Details
           </Button>
         </div>
       ),
@@ -275,7 +257,7 @@ export default function EmployeesPage() {
           </h1>
         </div>
         <Button onClick={() => openDrawer()} variant="primary">
-          + Add Employee
+          Add Employee
         </Button>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
@@ -294,16 +276,37 @@ export default function EmployeesPage() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title={
-          <div className="flex items-center gap-2">
-            {editId ? <FaEdit className="text-blue-600" /> : <FaUserPlus className="text-blue-600" />}
-            {editId ? "Edit Employee" : "Add Employee"}
+          editId ? "Edit Employee" : "Add Employee"
+        }
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
+              {formLoading
+                ? editId
+                  ? "Updating..."
+                  : "Adding..."
+                : editId
+                ? "Update"
+                : "Add"}
+            </Button>
           </div>
         }
       >
         <AtomicForm
           fields={fields}
           onSubmit={handleSubmit}
-          submitLabel={editId ? "Update" : "Add"}
+          submitLabel=""
           loading={formLoading}
           error={formError}
         />
@@ -315,12 +318,7 @@ export default function EmployeesPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title={
-          <div className="flex items-center gap-2">
-            <FaTrash className="text-red-600" />
-            Delete Employee
-          </div>
-        }
+        title="Delete Employee"
         message="Are you sure you want to delete this employee? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
@@ -330,12 +328,7 @@ export default function EmployeesPage() {
         <Dialog
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          title={
-            <div className="flex items-center gap-2">
-              <FaUser className="text-blue-600" />
-              Employee Details
-            </div>
-          }
+          title="Employee Details"
           message={
             <div className="space-y-3 text-left">
               <div className="flex items-center gap-3">

@@ -5,24 +5,10 @@ import { getAuth, updateProfile, updatePassword } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseApp } from "../../../firebaseConfig";
 import Button from "../../../components/atoms/Button";
-import {
-  FaPencilAlt,
-  FaCog,
-  FaUser,
-  FaEnvelope,
-  FaLock,
-  FaCamera,
-  FaSave,
-  FaTimes,
-  FaCheck,
-  FaExclamationTriangle,
-} from "react-icons/fa";
 import Image from "next/image";
 
 export default function SettingsPage() {
-  const [user, setUser] = useState<
-    ReturnType<typeof getAuth>["currentUser"] | null
-  >(null);
+  const [user, setUser] = useState<ReturnType<typeof getAuth>["currentUser"] | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [photoURL, setPhotoURL] = useState("");
@@ -30,9 +16,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(
-    null
-  );
+  const [editing, setEditing] = useState<null | "name" | "password" | "photo">(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -107,184 +91,140 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className=" bg-white p-8 rounded shadow">
-      <div className="flex items-center gap-3 mb-6">
-        <FaCog className="text-3xl text-blue-600" />
-        <h1 className="text-2xl font-bold">Settings</h1>
-      </div>
-      {/* Profile Picture Row */}
-      <div className="flex items-center justify-between border-b py-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Image
-              src={photoURL || "/default-profile.png"}
-              alt="Profile"
-              width={64}
-              height={64}
-              className="w-16 h-16 rounded-full object-cover border"
-            />
-            <FaCamera className="absolute -bottom-1 -right-1 text-blue-600 bg-white rounded-full p-1" />
+    <div className="min-h-[80vh] bg-white py-10">
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center tracking-tight">Settings</h1>
+        
+        {/* Profile Section */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-blue-600 mb-4">Profile</h2>
+          <div className="flex items-center gap-6 mb-6">
+            <div className="relative">
+              <Image
+                src={photoURL || "/default-profile.png"}
+                alt="Profile"
+                width={72}
+                height={72}
+                className="w-20 h-20 rounded-xl object-cover border-2 border-blue-200 shadow-md"
+              />
+              <button
+                className="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full p-2 shadow-lg hover:bg-blue-700 transition"
+                onClick={() => setEditing("photo")}
+                aria-label="Edit profile picture"
+              >
+                Edit
+              </button>
+            </div>
+            <div>
+              <div className="text-gray-900 text-xl font-semibold mb-1">{user?.displayName || "-"}</div>
+              <div className="text-gray-600 text-sm">{email}</div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <FaUser className="text-blue-600" />
-            <span className="font-medium text-lg text-black">
-              Profile Picture
-            </span>
-          </div>
-        </div>
-        {editing === "photo" ? (
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              className="px-3 py-1"
-              onClick={() => setEditing(null)}
-              disabled={loading}
+          {editing === "photo" && (
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex flex-col items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4"
             >
-              <FaTimes className="mr-1" />
-              Cancel
-            </Button>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handlePhotoChange}
+                className="mb-2 text-gray-700"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setEditing(null)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+            </form>
+          )}
+        </section>
+
+        {/* Account Section */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-blue-600 mb-4">Account</h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+              <div>
+                <div className="text-gray-900 font-medium">Name</div>
+                <div className="text-gray-600 text-sm">{user?.displayName || "-"}</div>
+              </div>
+              {editing === "name" ? null : (
+                <Button variant="secondary" onClick={() => setEditing("name")}>Edit</Button>
+              )}
+            </div>
+            {editing === "name" && (
+              <form
+                onSubmit={handleNameChange}
+                className="flex flex-col gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4"
+              >
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button type="submit" variant="primary" disabled={loading}>Save</Button>
+                  <Button type="button" variant="secondary" onClick={() => setEditing(null)} disabled={loading}>Cancel</Button>
+                </div>
+              </form>
+            )}
+            <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+              <div>
+                <div className="text-gray-900 font-medium">Email</div>
+                <div className="text-gray-600 text-sm">{email}</div>
+              </div>
+              {/* Email not editable */}
+            </div>
           </div>
-        ) : (
-          <button
-            className="text-blue-600 hover:text-blue-800 p-2"
-            onClick={() => setEditing("photo")}
-            aria-label="Edit profile picture"
-          >
-            <FaPencilAlt />
-          </button>
+        </section>
+
+        {/* Security Section */}
+        <section>
+          <h2 className="text-lg font-semibold text-blue-600 mb-4">Security</h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+              <div>
+                <div className="text-gray-900 font-medium">Password</div>
+                <div className="text-gray-600 text-sm">••••••••</div>
+              </div>
+              {editing === "password" ? null : (
+                <Button variant="secondary" onClick={() => setEditing("password")}>Change</Button>
+              )}
+            </div>
+            {editing === "password" && (
+              <form
+                onSubmit={handlePasswordChange}
+                className="flex flex-col gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4"
+              >
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                  placeholder="New password"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button type="submit" variant="primary" disabled={loading}>Save</Button>
+                  <Button type="button" variant="secondary" onClick={() => setEditing(null)} disabled={loading}>Cancel</Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
+
+        {/* Feedback Messages */}
+        {(message || error) && (
+          <div className={`mt-8 text-center rounded-xl px-4 py-3 font-medium ${message ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
+            {message || error}
+          </div>
         )}
       </div>
-      {editing === "photo" && (
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col items-center gap-2 bg-blue-50 border border-blue-200 rounded p-4 my-2"
-        >
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            onChange={handlePhotoChange}
-            className="mb-2"
-          />
-        </form>
-      )}
-      {/* Name Row */}
-      <div className="flex items-center justify-between border-b py-4">
-        <div className="flex items-center gap-3">
-          <FaUser className="text-blue-600" />
-          <div>
-            <div className="font-medium text-lg text-black">Name</div>
-            <div>{user?.displayName || "-"}</div>
-          </div>
-        </div>
-        {editing === "name" ? null : (
-          <button
-            className="text-blue-600 hover:text-blue-800 p-2"
-            onClick={() => setEditing("name")}
-            aria-label="Edit name"
-          >
-            <FaPencilAlt />
-          </button>
-        )}
-      </div>
-      {editing === "name" && (
-        <form
-          onSubmit={handleNameChange}
-          className="flex gap-2 bg-blue-50 border border-blue-200 rounded p-4 my-2"
-        >
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border rounded px-3 py-2 w-full text-black"
-          />
-          <div className="flex gap-2 justify-end">
-            <Button type="submit" className="px-3 py-1">
-              <FaSave className="mr-1" />
-              Save
-            </Button>
-            <Button
-              type="button"
-              className="px-3 py-1"
-              variant="secondary"
-              onClick={() => setEditing(null)}
-            >
-              <FaTimes className="mr-1" />
-              Cancel
-            </Button>
-          </div>
-        </form>
-      )}
-      {/* Email Row (not editable) */}
-      <div className="flex items-center justify-between border-b py-4">
-        <div className="flex items-center gap-3">
-          <FaEnvelope className="text-green-600" />
-          <div>
-            <div className="font-medium text-lg text-black">Email</div>
-            <div className="text-gray-700">{email}</div>
-          </div>
-        </div>
-      </div>
-      {/* Password Row */}
-      <div className="flex items-center justify-between border-b py-4">
-        <div className="flex items-center gap-3">
-          <FaLock className="text-purple-600" />
-          <div>
-            <div className="font-medium text-lg text-black">Password</div>
-          </div>
-        </div>
-        {editing === "password" ? null : (
-          <button
-            className="text-blue-600 hover:text-blue-800 p-2"
-            onClick={() => setEditing("password")}
-            aria-label="Edit password"
-          >
-            <FaPencilAlt />
-          </button>
-        )}
-      </div>
-      {editing === "password" && (
-        <form
-          onSubmit={handlePasswordChange}
-          className="flex gap-2 bg-blue-50 border border-blue-200 rounded p-4 my-2"
-        >
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="border rounded px-3 py-2 w-full text-black"
-            placeholder="New password"
-          />
-          <div className="flex gap-2 justify-end">
-            <Button type="submit" className="px-3 py-1">
-              <FaSave className="mr-1" />
-              Save
-            </Button>
-            <Button
-              type="button"
-              className="px-3 py-1"
-              variant="secondary"
-              onClick={() => setEditing(null)}
-            >
-              <FaTimes className="mr-1" />
-              Cancel
-            </Button>
-          </div>
-        </form>
-      )}
-      {/* Messages */}
-      {message && (
-        <div className="flex items-center gap-2 text-green-600 mb-2 mt-4">
-          <FaCheck />
-          {message}
-        </div>
-      )}
-      {error && (
-        <div className="flex items-center gap-2 text-red-600 mb-2 mt-4">
-          <FaExclamationTriangle />
-          {error}
-        </div>
-      )}
     </div>
   );
 }

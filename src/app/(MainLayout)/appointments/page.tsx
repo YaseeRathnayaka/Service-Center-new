@@ -1,16 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  FaCalendarAlt,
-  FaCalendarPlus,
-  FaEdit,
-  FaTrash,
-  FaUser,
-  FaCar,
-  FaClock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaHourglassHalf,
+import { 
+  FaCalendarAlt, 
+  FaHourglassHalf, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaClock 
 } from "react-icons/fa";
 import {
   getAppointments,
@@ -19,6 +14,7 @@ import {
   deleteAppointment,
   Appointment,
 } from "../../../lib/api/appointments";
+import { getVehicles, addVehicle } from '../../../lib/api/vehicles';
 import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
 import Button from "../../../components/atoms/Button";
 import Table, { Column } from "../../../components/atoms/Table";
@@ -27,6 +23,10 @@ import Dialog from "../../../components/molecules/Dialog";
 import "remixicon/fonts/remixicon.css";
 import { toast } from "react-toastify";
 import LottieLoader from "../../../components/atoms/LottieLoader";
+import { Calendar, dateFnsLocalizer, Event as RBCEvent } from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
 
 const statusOptions = [
   { label: "Scheduled", value: "Scheduled" },
@@ -34,6 +34,33 @@ const statusOptions = [
   { label: "Completed", value: "Completed" },
   { label: "Cancelled", value: "Cancelled" },
 ];
+
+const locales = { 'en-US': enUS };
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 0 }),
+  getDay,
+  locales,
+});
+
+function mapAppointmentsToEvents(appts: Appointment[]): RBCEvent[] {
+  return appts.map((a) => {
+    let date: Date;
+    if (typeof a.date === 'object' && 'toDate' in a.date) {
+      date = a.date.toDate();
+    } else {
+      date = new Date(a.date as string);
+    }
+    return {
+      title: `${a.customer} (${a.status})`,
+      start: date,
+      end: date,
+      allDay: true,
+      resource: a,
+    };
+  });
+}
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -51,6 +78,7 @@ export default function AppointmentsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [view, setView] = useState<'table' | 'calendar'>('table');
 
   // Fetch appointments
   const fetchData = async () => {
@@ -96,6 +124,13 @@ export default function AppointmentsPage() {
     setFormLoading(true);
     setFormError("");
     try {
+      // Check if vehicle exists by plate
+      const vehicles = await getVehicles();
+      const existingVehicle = vehicles.find(v => v.plate === form.vehicle);
+      if (!existingVehicle) {
+        // If not, add vehicle with minimal info
+        await addVehicle({ make: '', model: '', year: '', plate: form.vehicle });
+      }
       if (editId) {
         await updateAppointment(editId, form);
         toast.success("Appointment updated successfully");
@@ -136,22 +171,12 @@ export default function AppointmentsPage() {
     {
       label: "Customer",
       accessor: "customer",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaUser className="text-blue-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
     },
     {
       label: "Vehicle",
       accessor: "vehicle",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <FaCar className="text-green-600" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
     },
     {
       label: "Date",
@@ -171,7 +196,8 @@ export default function AppointmentsPage() {
       label: "Status",
       accessor: "status",
       render: (
-        v: string | import("firebase/firestore").Timestamp | undefined
+        v: string | import("firebase/firestore").Timestamp | undefined,
+        row: Appointment
       ) => {
         if (typeof v === "string") {
           let icon, bgColor, textColor;
@@ -206,6 +232,31 @@ export default function AppointmentsPage() {
               >
                 {v}
               </span>
+              <select
+                className="ml-2 border rounded px-2 py-1 text-xs"
+                value={v}
+                onChange={async (e) => {
+                  const newStatus = e.target.value;
+                  try {
+                    await updateAppointment(row.id!, { status: newStatus });
+                    setAppointments((prev) =>
+                      prev.map((appt) =>
+                        appt.id === row.id ? { ...appt, status: newStatus } : appt
+                      )
+                    );
+                    toast.success("Status updated");
+                  } catch (err: unknown) {
+                    const error = err as Error;
+                    toast.error(error.message || "Error updating status");
+                  }
+                }}
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           );
         }
@@ -258,41 +309,68 @@ export default function AppointmentsPage() {
         <div className="flex items-center gap-3">
           <FaCalendarAlt className="text-3xl text-blue-600" />
           <h1 className="text-2xl font-bold text-blue-900">
-            Appointment Management
+            Appointments
           </h1>
         </div>
-        <Button onClick={() => openDrawer()} variant="primary">
-          + Add Appointment
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setView('table')} variant={view === 'table' ? 'primary' : 'secondary'}>
+            Table View
+          </Button>
+          <Button onClick={() => setView('calendar')} variant={view === 'calendar' ? 'primary' : 'secondary'}>
+            Calendar View
+          </Button>
+          <Button onClick={() => openDrawer()} variant="primary">
+            Add Appointment
+          </Button>
+        </div>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
-        <div className="flex items-center gap-2 mb-4">
-          <FaCalendarAlt className="text-xl text-blue-600" />
-          <h2 className="font-semibold text-blue-900">All Appointments</h2>
-        </div>
-        <Table columns={columns} data={appointments} />
-        {(loading || formLoading || deleteLoading) && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 rounded-xl">
-            <LottieLoader size={64} />
+        {view === 'table' ? (
+          <>
+            <div className="flex items-center gap-2 mb-4">
+              <FaCalendarAlt className="text-xl text-blue-600" />
+              <h2 className="font-semibold text-blue-900">All Appointments</h2>
+            </div>
+            <Table columns={columns} data={appointments} />
+            {(loading || formLoading || deleteLoading) && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 rounded-xl">
+                <LottieLoader size={64} />
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="bg-white rounded-xl shadow p-4">
+            <Calendar
+              localizer={localizer}
+              events={mapAppointmentsToEvents(appointments)}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 600, background: 'white', borderRadius: '1rem' }}
+              popup
+              views={['month', 'week', 'day']}
+              eventPropGetter={() => ({ style: { background: '#2563eb', color: 'white', borderRadius: 8, border: 'none' } })}
+            />
           </div>
         )}
       </div>
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={
-          <div className="flex items-center gap-2">
-            {editId ? (
-              <FaEdit className="text-blue-600" />
-            ) : (
-              <FaCalendarPlus className="text-blue-600" />
-            )}
-            {editId ? "Edit Appointment" : "Add Appointment"}
-          </div>
-        }
+        title={editId ? "Edit Appointment" : "Add Appointment"}
         footer={
-          <div className="flex justify-end gap-2">
-            <Button variant="primary" type="submit" disabled={formLoading}>
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="secondary" 
+              onClick={() => setDrawerOpen(false)}
+              disabled={formLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              disabled={formLoading}
+            >
               {formLoading
                 ? editId
                   ? "Updating..."
@@ -309,8 +387,7 @@ export default function AppointmentsPage() {
           onSubmit={handleSubmit}
           loading={formLoading}
           error={formError}
-          submitLabel={editId ? "Update" : "Add"}
-          // Remove submit button from form
+          submitLabel=""
         />
       </Drawer>
       <Dialog
@@ -320,12 +397,7 @@ export default function AppointmentsPage() {
           setDeleteId(null);
         }}
         onConfirm={handleConfirmDelete}
-        title={
-          <div className="flex items-center gap-2">
-            <FaTrash className="text-red-600" />
-            Delete Appointment
-          </div>
-        }
+        title="Delete Appointment"
         message="Are you sure you want to delete this appointment? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"

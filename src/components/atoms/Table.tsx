@@ -16,24 +16,36 @@ interface TableProps<T> {
 export default function Table<T>({ columns, data, className, rowKey = 'id' }: TableProps<T>) {
   return (
     <div className={`overflow-x-auto ${className || ''}`}>
-      <table className="min-w-full bg-white rounded-xl shadow-sm text-sm border-separate border-spacing-0">
-        <thead className="sticky top-0 z-10 bg-white/95">
-          <tr className="text-blue-800 font-medium text-xs uppercase tracking-wider border-b border-blue-100">
-            {columns.map(col => (
-              <th key={String(col.accessor)} className="py-2 px-3 text-left font-semibold whitespace-nowrap">{col.label}</th>
+      <div className="bg-white border-2 border-slate-200 shadow-lg">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
+            <tr>
+              {columns.map((col, index) => (
+                <th 
+                  key={String(col.accessor)} 
+                  className={`py-4 px-6 text-left font-bold text-slate-700 text-sm uppercase tracking-wider whitespace-nowrap
+                    ${index === 0 ? 'border-r border-slate-200' : ''}
+                    ${index === columns.length - 1 ? '' : 'border-r border-slate-200'}
+                  `}
+                >
+                  {col.label}
+                </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+          <tbody className="divide-y divide-slate-200">
           {data.map((row, i) => (
             <tr
               key={typeof rowKey === 'function' ? rowKey(row) : (row[rowKey as keyof T] as React.Key) || i}
-              className="border-b border-blue-50 hover:bg-blue-50/60 transition group"
+                className="bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group border-l-4 border-l-transparent hover:border-l-blue-500"
             >
-              {columns.map(col => (
+                {columns.map((col, index) => (
                 <td
                   key={String(col.accessor)}
-                  className="py-2 px-3 text-gray-900 align-middle whitespace-nowrap text-[13px] font-medium group-hover:text-blue-900"
+                    className={`py-4 px-6 text-slate-700 align-middle whitespace-nowrap text-sm font-medium group-hover:text-slate-900 transition-colors duration-200
+                      ${index === 0 ? 'border-r border-slate-200' : ''}
+                      ${index === columns.length - 1 ? '' : 'border-r border-slate-200'}
+                    `}
                 >
                   {col.render ? col.render(row[col.accessor], row) : (row[col.accessor] as React.ReactNode)}
                 </td>
@@ -42,6 +54,12 @@ export default function Table<T>({ columns, data, className, rowKey = 'id' }: Ta
           ))}
         </tbody>
       </table>
+        {data.length === 0 && (
+          <div className="py-12 px-6 text-center">
+            <div className="text-slate-400 text-sm font-medium">No data available</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 
