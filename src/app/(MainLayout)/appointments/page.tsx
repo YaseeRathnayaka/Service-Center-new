@@ -14,7 +14,7 @@ import {
   deleteAppointment,
   Appointment,
 } from "../../../lib/api/appointments";
-import { getVehicles, addVehicle, Vehicle } from '../../../lib/api/vehicles';
+import { getVehicles, addVehicle } from '../../../lib/api/vehicles';
 import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
 import Button from "../../../components/atoms/Button";
 import Table, { Column } from "../../../components/atoms/Table";

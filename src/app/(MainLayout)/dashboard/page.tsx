@@ -5,7 +5,6 @@ import {
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import { getAppointments, Appointment } from '../../../lib/api/appointments';
-import { Timestamp } from 'firebase/firestore';
 
 // KPI data with enhanced metrics
 const kpis = [
