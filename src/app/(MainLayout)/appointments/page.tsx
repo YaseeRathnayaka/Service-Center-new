@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { 
-  FaCalendarAlt, 
-  FaHourglassHalf, 
-  FaCheckCircle, 
-  FaTimesCircle, 
-  FaClock 
+import {
+  FaCalendarAlt,
+  FaHourglassHalf,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaClock,
 } from "react-icons/fa";
 import {
   getAppointments,
@@ -14,7 +14,7 @@ import {
   deleteAppointment,
   Appointment,
 } from "../../../lib/api/appointments";
-import { getVehicles, addVehicle } from '../../../lib/api/vehicles';
+import { getVehicles, addVehicle } from "../../../lib/api/vehicles";
 import AtomicForm, { AtomicField } from "../../../components/atoms/AtomicForm";
 import Button from "../../../components/atoms/Button";
 import Table, { Column } from "../../../components/atoms/Table";
@@ -23,10 +23,14 @@ import Dialog from "../../../components/molecules/Dialog";
 import "remixicon/fonts/remixicon.css";
 import { toast } from "react-toastify";
 import LottieLoader from "../../../components/atoms/LottieLoader";
-import { Calendar, dateFnsLocalizer, Event as RBCEvent } from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import enUS from 'date-fns/locale/en-US';
+import {
+  Calendar,
+  dateFnsLocalizer,
+  Event as RBCEvent,
+} from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import { enUS } from "date-fns/locale/en-US";
 
 const statusOptions = [
   { label: "Scheduled", value: "Scheduled" },
@@ -35,7 +39,7 @@ const statusOptions = [
   { label: "Cancelled", value: "Cancelled" },
 ];
 
-const locales = { 'en-US': enUS };
+const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -47,7 +51,7 @@ const localizer = dateFnsLocalizer({
 function mapAppointmentsToEvents(appts: Appointment[]): RBCEvent[] {
   return appts.map((a) => {
     let date: Date;
-    if (typeof a.date === 'object' && 'toDate' in a.date) {
+    if (typeof a.date === "object" && "toDate" in a.date) {
       date = a.date.toDate();
     } else {
       date = new Date(a.date as string);
@@ -78,7 +82,7 @@ export default function AppointmentsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [view, setView] = useState<'table' | 'calendar'>('table');
+  const [view, setView] = useState<"table" | "calendar">("table");
 
   // Fetch appointments
   const fetchData = async () => {
@@ -126,10 +130,15 @@ export default function AppointmentsPage() {
     try {
       // Check if vehicle exists by plate
       const vehicles = await getVehicles();
-      const existingVehicle = vehicles.find(v => v.plate === form.vehicle);
+      const existingVehicle = vehicles.find((v) => v.plate === form.vehicle);
       if (!existingVehicle) {
         // If not, add vehicle with minimal info
-        await addVehicle({ make: '', model: '', year: '', plate: form.vehicle });
+        await addVehicle({
+          make: "",
+          model: "",
+          year: "",
+          plate: form.vehicle,
+        });
       }
       if (editId) {
         await updateAppointment(editId, form);
@@ -171,12 +180,16 @@ export default function AppointmentsPage() {
     {
       label: "Customer",
       accessor: "customer",
-      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
+      render: (
+        value: string | import("firebase/firestore").Timestamp | undefined
+      ) => (typeof value === "string" ? value : ""),
     },
     {
       label: "Vehicle",
       accessor: "vehicle",
-      render: (value: string | import("firebase/firestore").Timestamp | undefined) => typeof value === 'string' ? value : '',
+      render: (
+        value: string | import("firebase/firestore").Timestamp | undefined
+      ) => (typeof value === "string" ? value : ""),
     },
     {
       label: "Date",
@@ -241,7 +254,9 @@ export default function AppointmentsPage() {
                     await updateAppointment(row.id!, { status: newStatus });
                     setAppointments((prev) =>
                       prev.map((appt) =>
-                        appt.id === row.id ? { ...appt, status: newStatus } : appt
+                        appt.id === row.id
+                          ? { ...appt, status: newStatus }
+                          : appt
                       )
                     );
                     toast.success("Status updated");
@@ -308,15 +323,19 @@ export default function AppointmentsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <FaCalendarAlt className="text-3xl text-blue-600" />
-          <h1 className="text-2xl font-bold text-blue-900">
-            Appointments
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-900">Appointments</h1>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setView('table')} variant={view === 'table' ? 'primary' : 'secondary'}>
+          <Button
+            onClick={() => setView("table")}
+            variant={view === "table" ? "primary" : "secondary"}
+          >
             Table View
           </Button>
-          <Button onClick={() => setView('calendar')} variant={view === 'calendar' ? 'primary' : 'secondary'}>
+          <Button
+            onClick={() => setView("calendar")}
+            variant={view === "calendar" ? "primary" : "secondary"}
+          >
             Calendar View
           </Button>
           <Button onClick={() => openDrawer()} variant="primary">
@@ -325,7 +344,7 @@ export default function AppointmentsPage() {
         </div>
       </div>
       <div className="bg-white rounded-xl shadow p-4 relative">
-        {view === 'table' ? (
+        {view === "table" ? (
           <>
             <div className="flex items-center gap-2 mb-4">
               <FaCalendarAlt className="text-xl text-blue-600" />
@@ -345,10 +364,17 @@ export default function AppointmentsPage() {
               events={mapAppointmentsToEvents(appointments)}
               startAccessor="start"
               endAccessor="end"
-              style={{ height: 600, background: 'white', borderRadius: '1rem' }}
+              style={{ height: 600, background: "white", borderRadius: "1rem" }}
               popup
-              views={['month', 'week', 'day']}
-              eventPropGetter={() => ({ style: { background: '#2563eb', color: 'white', borderRadius: 8, border: 'none' } })}
+              views={["month", "week", "day"]}
+              eventPropGetter={() => ({
+                style: {
+                  background: "#2563eb",
+                  color: "white",
+                  borderRadius: 8,
+                  border: "none",
+                },
+              })}
             />
           </div>
         )}
@@ -359,15 +385,15 @@ export default function AppointmentsPage() {
         title={editId ? "Edit Appointment" : "Add Appointment"}
         footer={
           <div className="flex justify-end gap-3">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => setDrawerOpen(false)}
               disabled={formLoading}
             >
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={handleSubmit}
               disabled={formLoading}
             >
