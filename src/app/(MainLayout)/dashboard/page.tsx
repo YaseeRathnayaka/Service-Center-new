@@ -238,64 +238,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Today's Appointments by Status */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <FaCalendarAlt className="text-blue-500" /> Today&apos;s
-            Appointments by Status
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {loadingToday ? (
-              <div className="col-span-6 flex justify-center items-center py-8">
-                <span className="text-gray-500">Loading...</span>
-              </div>
-            ) : (
-              [
-                {
-                  label: "Scheduled",
-                  icon: <FaClock className="text-blue-600 text-lg" />,
-                  color: "from-blue-400 to-blue-600",
-                },
-                {
-                  label: "In Progress",
-                  icon: <FaHourglassHalf className="text-orange-600 text-lg" />,
-                  color: "from-orange-400 to-orange-600",
-                },
-                {
-                  label: "Completed",
-                  icon: <FaCheckCircle className="text-green-600 text-lg" />,
-                  color: "from-green-400 to-green-600",
-                },
-                {
-                  label: "Cancelled",
-                  icon: <FaTimesCircle className="text-red-600 text-lg" />,
-                  color: "from-red-400 to-red-600",
-                },
-              ].map((status, idx) => (
-                <div
-                  key={status.label}
-                  className={`rounded-2xl shadow-lg border border-gray-100 p-4 flex flex-col items-center bg-gradient-to-r ${
-                    status.color
-                  } text-white transition-all duration-700 ${
-                    animateCards
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-8 opacity-0"
-                  }`}
-                  style={{ transitionDelay: `${idx * 80}ms` }}
-                >
-                  <div className="w-10 h-10 flex items-center justify-center mb-2">
-                    {status.icon}
-                  </div>
-                  <div className="text-2xl font-bold">
-                    {todayStatus[status.label] || 0}
-                  </div>
-                  <div className="text-sm font-medium">{status.label}</div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
           {kpis.map((kpi, index) => (
